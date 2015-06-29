@@ -4,7 +4,7 @@ Plugin Name: Login No Captcha reCAPTCHA
 Plugin URI: https://wordpress.org/plugins/login-recaptcha/
 Description: Adds a Google reCAPTCHA No Captcha checkbox to the login form, thwarting automated hacking attempts
 Author: Robert Peake
-Version: 1.1.3
+Version: 1.1.4
 Author URI: http://www.robertpeake.com/
 Text Domain: login_nocaptcha
 Domain Path: /languages/
@@ -104,24 +104,24 @@ class LoginNocaptcha {
     public static function login_form() {
         echo sprintf('<div class="g-recaptcha" data-sitekey="%s"></div>', get_option('login_nocaptcha_key'))."\n";
         echo '<noscript>'."\n";
-        echo '  <div style="width: 302px; height: 352px;">'."\n";
-        echo '      <div style="width: 302px; height: 352px; position: relative;">'."\n";
-        echo '          <div style="width: 302px; height: 352px; position: absolute;">'."\n";
+        echo '  <div style="width: 302px; height: 473px;">'."\n";
+        echo '      <div style="width: 302px; height: 422px; position: relative;">'."\n";
+        echo '          <div style="width: 302px; height: 422px; position: relative;">'."\n";
         echo sprintf('              <iframe src="https://www.google.com/recaptcha/api/fallback?k=%s"', get_option('login_nocaptcha_key'))."\n";
         echo '                  frameborder="0" scrolling="no"'."\n";
-        echo '                  style="width: 302px; height:352px; border-style: none;">'."\n";
+        echo '                  style="width: 302px; height:422px; border-style: none;">'."\n";
         echo '              </iframe>'."\n";
         echo '          </div>'."\n";
-        echo '          <div style="width: 250px; height: 80px; position: absolute; border-style: none;'."\n";
-        echo '              bottom: 21px; left: 25px; margin: 0px; padding: 0px; right: 25px;">'."\n";
+        echo '          <div style="width: 300px; height: 60px; border-style: none;'."\n";
+        echo '              bottom: 12px; left: 25px; margin: 0px; padding: 0px; right: 25px; background: #f9f9f9; border: 1px solid #c1c1c1; border-radius: 3px;">'."\n";
         echo '              <textarea id="g-recaptcha-response" name="g-recaptcha-response"'."\n";
         echo '                  class="g-recaptcha-response"'."\n";
-        echo '                  style="width: 250px; height: 80px; border: 1px solid #c1c1c1;'."\n";
-        echo '                  margin: 0px; padding: 0px; resize: none;" value="">'."\n";
+        echo '                  style="width: 250px; height: 40px; border: 1px solid #c1c1c1;'."\n";
+        echo '                  margin: 10px 25px; padding: 0px; resize: none;" value="">'."\n";
         echo '              </textarea>'."\n";
         echo '          </div>'."\n";
         echo '      </div>'."\n";
-        echo '</div>'."\n";
+        echo '</div><br>'."\n";
         echo '</noscript>'."\n";
     }
 
