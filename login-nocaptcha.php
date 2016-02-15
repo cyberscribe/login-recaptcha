@@ -104,7 +104,12 @@ class LoginNocaptcha {
     }
 
     public static function nocaptcha_form() {
-        echo sprintf('<div class="g-recaptcha" data-sitekey="%s"></div>', get_option('login_nocaptcha_key'))."\n";
+        echo sprintf('<div class="g-recaptcha" data-sitekey="%s" data-callback="submitEnable" data-expired-callback="submitDisable"></div>', get_option('login_nocaptcha_key'))."\n";
+        echo '<script>'."\n";
+		echo " function submitEnable() {jQuery('#wp-submit').attr('disabled', false);}";
+		echo " function submitDisable() {jQuery('#loginform #wp-submit').attr('disabled', true);}";
+		echo " jQuery(document).ready(function() {submitDisable();});";
+		echo '</script>'."\n";
         echo '<noscript>'."\n";
         echo '  <div style="width: 100%; height: 473px;">'."\n";
         echo '      <div style="width: 100%; height: 422px; position: relative;">'."\n";
