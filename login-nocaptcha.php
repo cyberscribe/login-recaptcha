@@ -4,7 +4,7 @@ Plugin Name: Login No Captcha reCAPTCHA
 Plugin URI: https://wordpress.org/plugins/login-recaptcha/
 Description: Adds a Google reCAPTCHA No Captcha checkbox to the login form, thwarting automated hacking attempts
 Author: Robert Peake
-Version: 1.1.5
+Version: 1.1.6
 Author URI: http://www.robertpeake.com/
 Text Domain: login_nocaptcha
 Domain Path: /languages/
@@ -106,9 +106,10 @@ class LoginNocaptcha {
     public static function nocaptcha_form() {
         echo sprintf('<div class="g-recaptcha" data-sitekey="%s" data-callback="submitEnable" data-expired-callback="submitDisable"></div>', get_option('login_nocaptcha_key'))."\n";
         echo '<script>'."\n";
-		echo " function submitEnable() {jQuery('#wp-submit').attr('disabled', false);}";
-		echo " function submitDisable() {jQuery('#loginform #wp-submit').attr('disabled', true);}";
-		echo " jQuery(document).ready(function() {submitDisable();});";
+		echo "    function submitEnable() {document.getElementById('wp-submit').removeAttribute('disabled');}";
+		echo "    function submitDisable() {document.getElementById('wp-submit').setAttribute('disabled','disabled');}";
+        echo "    function docready(fn){/in/.test(document.readyState)?setTimeout('docready('+fn+')',9):fn()}";
+        echo "    docready(function() {submitDisable();});";
 		echo '</script>'."\n";
         echo '<noscript>'."\n";
         echo '  <div style="width: 100%; height: 473px;">'."\n";
