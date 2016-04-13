@@ -31,7 +31,7 @@ echo settings_fields( 'login_nocaptcha' );
 <?php if(strlen(get_option('login_nocaptcha_key')) > 0 && strlen(get_option('login_nocaptcha_secret')) > 0): ?>
     <h3><?php _e('Example','login_nocaptcha'); ?></h3>
     <?php wp_enqueue_script('login_nocaptcha_google_api'); ?>
-    <?php LoginNocaptcha::login_form(); ?>
+    <?php LoginNocaptcha::nocaptcha_form(); ?>
     <h3><?php _e('Next Steps','login_nocaptcha'); ?></h3>
     <ol>
         <li><?php _e('If you see an error message above, check your keys before proceeding.','login_nocaptcha'); ?></li>
