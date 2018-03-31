@@ -2,8 +2,8 @@
 Contributors: robertpeake, robert.peake
 Tags: google,nocaptcha,recaptcha,security,login,bots
 Requires at least: 3.0.0
-Tested up to: 4.7.1
-Stable tag: 1.1.9
+Tested up to: 4.9.5
+Stable tag: 1.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -55,6 +55,18 @@ This plugin is not affiliated with or endorsed by Google in any way. Google is a
 2. Login screen once configured
 
 == Changelog ==
+
+= 1.2 =
+
+ * Fixed an important security issue (thanks to jezevec10 for reporting) to harden the reCaptcha-enabled login page against clever bots
+
+= 1.1.11 =
+
+ * Added French translation (thanks to fdinh)
+
+= 1.1.10 =
+
+ * Minor bugfix for error reporting
 
 = 1.1.7 =
 

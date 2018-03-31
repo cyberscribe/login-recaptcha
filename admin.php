@@ -22,7 +22,7 @@ echo settings_fields( 'login_nocaptcha' );
     </tr>
     </table>
     <p>
-    <input type="submit" name="submit" id="submit" class="button button-primary" value="Save Changes">
+    <input type="submit" name="submit" id="submit" class="button button-primary" value="<?php _e('Save Changes','login_nocaptcha'); ?>">
     <button name="reset" id="reset" class="button">
         <?php _e('Delete Keys and Disable','login_nocaptcha'); ?>
     </button>
