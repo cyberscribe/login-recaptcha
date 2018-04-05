@@ -4,7 +4,7 @@ Plugin Name: Login No Captcha reCAPTCHA
 Plugin URI: https://wordpress.org/plugins/login-recaptcha/
 Description: Adds a Google reCAPTCHA No Captcha checkbox to the login form, thwarting automated hacking attempts
 Author: Robert Peake
-Version: 1.2
+Version: 1.1.11
 Author URI: http://www.robertpeake.com/
 Text Domain: login_nocaptcha
 Domain Path: /languages/
@@ -27,10 +27,18 @@ class LoginNocaptcha {
             add_action('login_enqueue_scripts', array('LoginNocaptcha', 'enqueue_scripts_css'));
             add_action('admin_enqueue_scripts', array('LoginNocaptcha', 'enqueue_scripts_css'));
             add_action('login_form',array('LoginNocaptcha', 'nocaptcha_form'));
-            //add_action('lostpassword_form', array('LoginNocaptcha', 'nocaptcha_form'));
+            add_action('plugins_loaded', array('LoginNocaptcha', 'action_plugins_loaded'));
             add_action('authenticate', array('LoginNocaptcha', 'authenticate'), 30, 3);
-            //add_action('lostpassword_post', array('LoginNocaptcha', 'authenticate'), 30, 3);
         }
+    }
+
+    public function action_plugins_loaded() {
+        if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
+            add_action('wp_head', array('LoginNocaptcha', 'enqueue_scripts_css'));
+            add_action('woocommerce_login_form',array('LoginNocaptcha', 'nocaptcha_form'));
+        }
+        //add_action('lostpassword_form', array('LoginNocaptcha', 'nocaptcha_form'));
+        //add_action('lostpassword_post', array('LoginNocaptcha', 'authenticate'), 30, 3);
     }
 
     public static function load_textdomain() {
@@ -106,8 +114,8 @@ class LoginNocaptcha {
     public static function nocaptcha_form() {
         echo sprintf('<div class="g-recaptcha" data-sitekey="%s" data-callback="submitEnable" data-expired-callback="submitDisable"></div>', get_option('login_nocaptcha_key'))."\n";
         echo '<script>'."\n";
-		echo "    function submitEnable() {document.getElementById('wp-submit').removeAttribute('disabled');}";
-		echo "    function submitDisable() {document.getElementById('wp-submit').setAttribute('disabled','disabled');}";
+		echo "    function submitEnable() {var button = document.getElementById('wp-submit'); if (button !== null) {button.removeAttribute('disabled');} button = document.getElementById('submit'); if (button !== null) {button.removeAttribute('disabled');} }";
+		echo "    function submitDisable() {var button = document.getElementById('wp-submit'); if (button !== null) {button.setAttribute('disabled','disabled');} button = document.getElementById('submit'); if (button !== null) {button.setAttribute('disabled','disabled');} }";
         echo "    function docready(fn){/in/.test(document.readyState)?setTimeout('docready('+fn+')',9):fn()}";
         echo "    docready(function() {submitDisable();});";
 		echo '</script>'."\n";
@@ -159,7 +167,7 @@ class LoginNocaptcha {
                 } else {
                     if ( isset($g_response->{'error-codes'}) && $g_response->{'error-codes'} && in_array('missing-input-response', $g_response->{'error-codes'})) {
                         update_option('login_nocaptcha_working', true);
-                        return new WP_Error('denied', __('Please check the ReCaptcha box.','login_nocaptcha')); // no user input
+                        return new WP_Error('denied', __('Please check the ReCaptcha box.','login_nocaptcha'));
                     } else if ( isset($g_response->{'error-codes'}) && $g_response->{'error-codes'} && 
                                 (in_array('missing-input-secret', $g_response->{'error-codes'}) || in_array('invalid-input-secret', $g_response->{'error-codes'})) ) {
                         update_option('login_nocaptcha_working', false);
@@ -167,24 +175,24 @@ class LoginNocaptcha {
                         update_option('login_nocaptcha_error', sprintf(__('Login NoCaptcha is not working. <a href="%s">Please check your settings</a>. The message from Google was: %s', 'login_nocaptcha'), 
                                                                'options-general.php?page=login-recaptcha/admin.php',
                                                                 self::get_google_errors_as_string($g_response)));
-                        return $user; // invalid secret entered; prevent lockouts
-                    } else if( isset($g_response->{'error-codes'})) { // assume all other errors are due to incorrect user input
+                        return $user; //invalid secret entered; prevent lockouts
+                    } else if( isset($g_response->{'error-codes'})) {
                         update_option('login_nocaptcha_working', true);
                         return new WP_Error('denied', __('Incorrect ReCaptcha, please try again.','login_nocaptcha'));
-                    } else { // no success, but also no error code returned
+                    } else {
                         update_option('login_nocaptcha_working', false);
                         update_option('login_nocaptcha_google_error', 'error');
                         update_option('login_nocaptcha_error', sprintf(__('Login NoCaptcha is not working. <a href="%s">Please check your settings</a>.', 'login_nocaptcha'), 'options-general.php?page=login-recaptcha/admin.php').' '.__('The response from Google was not valid.','login_nocaptcha'));
                         return $user; //not a sane response, prevent lockouts
                     }
                 }
-            } else { // response from Google did not decode from JSON to an object
+            } else {
                 update_option('login_nocaptcha_working', false);
                 update_option('login_nocaptcha_google_error', 'error');
                 update_option('login_nocaptcha_error', sprintf(__('Login NoCaptcha is not working. <a href="%s">Please check your settings</a>.', 'login_nocaptcha'), 'options-general.php?page=login-recaptcha/admin.php').' '.__('The response from Google was not valid.','login_nocaptcha'));
                 return $user; //not a sane response, prevent lockouts
             }
-        } else { // g-recaptcha-response not received in POST payload from user at all, despite plugin being active
+        } else {
             update_option('login_nocaptcha_working', true);
             return new WP_Error('denied', __('Please check the ReCaptcha box.','login_nocaptcha'));
         }
