@@ -4,7 +4,7 @@ Plugin Name: Login No Captcha reCAPTCHA
 Plugin URI: https://wordpress.org/plugins/login-recaptcha/
 Description: Adds a Google reCAPTCHA No Captcha checkbox to the login form, thwarting automated hacking attempts
 Author: Robert Peake
-Version: 1.2.1b
+Version: 1.2.2
 Author URI: http://www.robertpeake.com/
 Text Domain: login_nocaptcha
 Domain Path: /languages/
@@ -37,8 +37,6 @@ class LoginNocaptcha {
             add_action('wp_head', array('LoginNocaptcha', 'enqueue_scripts_css'));
             add_action('woocommerce_login_form',array('LoginNocaptcha', 'nocaptcha_form'));
         }
-        //add_action('lostpassword_form', array('LoginNocaptcha', 'nocaptcha_form'));
-        //add_action('lostpassword_post', array('LoginNocaptcha', 'authenticate'), 30, 3);
     }
 
     public static function load_textdomain() {
@@ -114,8 +112,27 @@ class LoginNocaptcha {
     public static function nocaptcha_form() {
         echo sprintf('<div class="g-recaptcha" data-sitekey="%s" data-callback="submitEnable" data-expired-callback="submitDisable"></div>', get_option('login_nocaptcha_key'))."\n";
         echo '<script>'."\n";
-		echo "    function submitEnable() {var button = document.getElementById('wp-submit'); if (button !== null) {button.removeAttribute('disabled');} button = document.getElementById('submit'); if (button !== null) {button.removeAttribute('disabled');} }";
-		echo "    function submitDisable() {var button = document.getElementById('wp-submit'); if (button !== null) {button.setAttribute('disabled','disabled');} button = document.getElementById('submit'); if (button !== null) {button.setAttribute('disabled','disabled');} }";
+		echo "    function submitEnable() {\n";
+        echo "                 var button = document.getElementById('wp-submit');\n";
+        echo "                 if (button === null) {\n";
+        echo "                     button = document.getElementById('submit');\n";
+        echo "                 }\n";
+        echo "                 if (button !== null) {\n";
+        echo "                     button.removeAttribute('disabled');\n";
+        echo "                 }\n";
+        echo "             }\n";
+		echo "    function submitDisable() {\n";
+        echo "                 var button = document.getElementById('wp-submit');\n";
+        // do not disable button with id "submit" in admin context, as this is the settings submit button
+        if (!is_admin()) { 
+            echo "                 if (button === null) {\n";
+            echo "                     button = document.getElementById('submit');\n";
+            echo "                 }\n";
+        }
+        echo "                 if (button !== null) {\n";
+        echo "                     button.setAttribute('disabled','disabled');\n";
+        echo "                 }\n";
+        echo "             }\n";
         echo "    function docready(fn){/in/.test(document.readyState)?setTimeout('docready('+fn+')',9):fn()}";
         echo "    docready(function() {submitDisable();});";
 		echo '</script>'."\n";
