@@ -29,6 +29,7 @@ class LoginNocaptcha {
             add_action('login_form',array('LoginNocaptcha', 'nocaptcha_form'));
             add_action('plugins_loaded', array('LoginNocaptcha', 'action_plugins_loaded'));
             add_action('authenticate', array('LoginNocaptcha', 'authenticate'), 30, 3);
+            add_filter( 'shake_error_codes', array('LoginNocaptcha', 'add_shake_error_codes') );
         }
     }
 
@@ -168,7 +169,7 @@ class LoginNocaptcha {
             $secret = get_option('login_nocaptcha_secret');
             $payload = array('secret' => $secret, 'response' => $response, 'remoteip' => $remoteip);
             $result = wp_remote_post('https://www.google.com/recaptcha/api/siteverify', array('body' => $payload) );
-            if (is_a($result,'WP_Error')) { // disable SSL verification for older cURL clients
+            if (is_wp_error('WP_Error')) { // disable SSL verification for older cURL clients
                 $ch = curl_init();
                 curl_setopt($ch, CURLOPT_URL, 'https://www.google.com/recaptcha/api/siteverify');
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -187,7 +188,12 @@ class LoginNocaptcha {
                 } else {
                     if ( isset($g_response->{'error-codes'}) && $g_response->{'error-codes'} && in_array('missing-input-response', $g_response->{'error-codes'})) {
                         update_option('login_nocaptcha_working', true);
-                        return new WP_Error('denied', __('Please check the ReCaptcha box.','login_nocaptcha'));
+                        if (is_wp_error($user)) {
+                            $user->add('no_captcha', __('<strong>ERROR</strong>&nbsp;: Please check the ReCaptcha box.','login_nocaptcha'));
+                            return $user;
+                        } else {
+                            return new WP_Error('no_captcha', __('<strong>ERROR</strong>&nbsp;: Please check the ReCaptcha box.','login_nocaptcha'));
+                        }
                     } else if ( isset($g_response->{'error-codes'}) && $g_response->{'error-codes'} && 
                                 (in_array('missing-input-secret', $g_response->{'error-codes'}) || in_array('invalid-input-secret', $g_response->{'error-codes'})) ) {
                         update_option('login_nocaptcha_working', false);
@@ -198,7 +204,12 @@ class LoginNocaptcha {
                         return $user; //invalid secret entered; prevent lockouts
                     } else if( isset($g_response->{'error-codes'})) {
                         update_option('login_nocaptcha_working', true);
-                        return new WP_Error('denied', __('Incorrect ReCaptcha, please try again.','login_nocaptcha'));
+                        if (is_wp_error($user)) {
+                            $user->add('invalid_captcha', __('<strong>ERROR</strong>&nbsp;: Incorrect ReCaptcha, please try again.','login_nocaptcha'));
+                            return $user;
+                        } else {
+                            return new WP_Error('invalid_captcha', __('<strong>ERROR</strong>&nbsp;: Incorrect ReCaptcha, please try again.','login_nocaptcha'));
+                        }
                     } else {
                         update_option('login_nocaptcha_working', false);
                         update_option('login_nocaptcha_google_error', 'error');
@@ -214,7 +225,12 @@ class LoginNocaptcha {
             }
         } else {
             update_option('login_nocaptcha_working', true);
-            return new WP_Error('denied', __('Please check the ReCaptcha box.','login_nocaptcha'));
+            if (is_wp_error($user)) {
+                $user->add('no_captcha', __('<strong>ERROR</strong>&nbsp;: Please check the ReCaptcha box.','login_nocaptcha'));
+                return $user;
+            } else {
+                return new WP_Error('no_captcha', __('<strong>ERROR</strong>&nbsp;: Please check the ReCaptcha box.','login_nocaptcha'));
+            }
         }
     }
 
@@ -226,6 +242,12 @@ class LoginNocaptcha {
             echo '    </p>'."\n";
             echo '</div>'."\n";
         }
+    }
+
+    public static function add_shake_error_codes( $shake_error_codes ) {
+        $shake_error_codes[] = 'no_captcha';
+        $shake_error_codes[] = 'invalid_captcha';
+        return $shake_error_codes;
     }
 }
 LoginNocaptcha::init();
