@@ -142,7 +142,7 @@ class LoginNocaptcha {
     }
 
     public static function authenticate($user, $username, $password) {
-        if (basename($_SERVER['PHP_SELF']) !== 'wp-login.php') { //calling context must be login form
+        if (isset($_SERVER['PHP_SELF']) && basename($_SERVER['PHP_SELF']) !== 'wp-login.php') { //calling context must be login form
             return $user;
         }
         if (isset($_POST['g-recaptcha-response'])) {
