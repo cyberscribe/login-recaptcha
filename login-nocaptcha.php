@@ -142,14 +142,14 @@ class LoginNocaptcha {
         echo '      <div style="width: 100%; height: 422px; position: relative;">'."\n";
         echo '          <div style="width: 302px; height: 422px; position: relative;">'."\n";
         echo sprintf('              <iframe src="https://www.google.com/recaptcha/api/fallback?k=%s"', get_option('login_nocaptcha_key'))."\n";
-        echo '                  frameborder="0" scrolling="no"'."\n";
+        echo '                  frameborder="0" title="captcha" scrolling="no"'."\n";
         echo '                  style="width: 302px; height:422px; border-style: none;">'."\n";
         echo '              </iframe>'."\n";
         echo '          </div>'."\n";
         echo '          <div style="width: 100%; height: 60px; border-style: none;'."\n";
         echo '              bottom: 12px; left: 25px; margin: 0px; padding: 0px; right: 25px; background: #f9f9f9; border: 1px solid #c1c1c1; border-radius: 3px;">'."\n";
         echo '              <textarea id="g-recaptcha-response" name="g-recaptcha-response"'."\n";
-        echo '                  class="g-recaptcha-response"'."\n";
+        echo '                  title="response" class="g-recaptcha-response"'."\n";
         echo '                  style="width: 250px; height: 40px; border: 1px solid #c1c1c1;'."\n";
         echo '                  margin: 10px 25px; padding: 0px; resize: none;" value="">'."\n";
         echo '              </textarea>'."\n";
