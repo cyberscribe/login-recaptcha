@@ -163,6 +163,9 @@ class LoginNocaptcha {
         if (isset($_SERVER['PHP_SELF']) && basename($_SERVER['PHP_SELF']) !== 'wp-login.php') { //calling context must be login form
             return $user;
         }
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+          return $user;
+        }
         if (isset($_POST['g-recaptcha-response'])) {
             $response = LoginNocaptcha::filter_string($_POST['g-recaptcha-response']);
             $remoteip = $_SERVER["REMOTE_ADDR"];
