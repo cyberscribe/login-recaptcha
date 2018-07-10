@@ -164,6 +164,9 @@ class LoginNocaptcha {
             !isset($_POST['woocommerce-login-nonce']) ) { //or a WooCommerce login form, otherwise bypass reCaptcha checking
             return $user;
         }
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+          return $user;
+        }
         if (isset($_POST['g-recaptcha-response'])) {
             $response = LoginNocaptcha::filter_string($_POST['g-recaptcha-response']);
             $remoteip = $_SERVER["REMOTE_ADDR"];
