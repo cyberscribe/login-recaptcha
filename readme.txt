@@ -3,7 +3,7 @@ Contributors: robertpeake, robert.peake
 Tags: google,nocaptcha,recaptcha,security,login,bots
 Requires at least: 3.0.0
 Tested up to: 4.9.5
-Stable tag: 1.2.2
+Stable tag: 1.2.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -56,9 +56,15 @@ This plugin is not affiliated with or endorsed by Google in any way. Google is a
 
 == Changelog ==
 
+= 1.2.3 =
+
+ * Improved Section 508 compliance
+ * Do not check for noCaptcha values when using a non-WordPress authentication method other than WooCommerce
+ * Add standard WordPress shake effect to invalid login response
+
 = 1.2.2 =
 
- * Do not check for noCaptcha values when using a non-WordPress authentication method (
+ * Do not check for noCaptcha values when using a non-WordPress authentication method
  * Fix bug with submit button greyed out on settings page
 
 = 1.2.1 =
