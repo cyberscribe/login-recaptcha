@@ -72,7 +72,7 @@ msgstr "Откройте браузер, отличный от Вашего ил
 
 #: admin.php:41
 msgid "If you are logged in on that new browser, log out"
-msgstr "Если вы вошли на сайт в новом браузере, выйдете"
+msgstr "Если вы вошли на сайт в новом браузере, выйдите из своей учетной записи"
 
 #: admin.php:42
 msgid "Attempt to log in to your site admin from that new browser"
