@@ -27,8 +27,8 @@ class LoginNocaptcha {
             add_action('login_enqueue_scripts', array('LoginNocaptcha', 'enqueue_scripts_css'));
             add_action('admin_enqueue_scripts', array('LoginNocaptcha', 'enqueue_scripts_css'));
             add_action('login_form',array('LoginNocaptcha', 'nocaptcha_form'));
-            // TODO: add back-end processing of lost password form and then uncomment this line
-            // add_action('lostpassword_form',array('LoginNocaptcha', 'nocaptcha_form'));
+            add_action('lostpassword_form',array('LoginNocaptcha', 'nocaptcha_form'));
+            add_action('lostpassword_post',array('LoginNocaptcha', 'authenticate'));
             add_action('plugins_loaded', array('LoginNocaptcha', 'action_plugins_loaded'));
             add_action('authenticate', array('LoginNocaptcha', 'authenticate'), 30, 3);
             add_filter( 'shake_error_codes', array('LoginNocaptcha', 'add_shake_error_codes') );
@@ -231,6 +231,10 @@ class LoginNocaptcha {
             }
         } else {
             update_option('login_nocaptcha_working', true);
+            parse_str($_SERVER[QUERY_STRING], $argv);
+            if (isset($argv['action']) && $argv['action'] == 'lostpassword') {
+                return new WP_Error('no_captcha', __('<strong>ERROR</strong>&nbsp;: Please check the ReCaptcha box.','login_nocaptcha'));
+            }
             if (is_wp_error($user)) {
                 $user->add('no_captcha', __('<strong>ERROR</strong>&nbsp;: Please check the ReCaptcha box.','login_nocaptcha'));
                 return $user;
