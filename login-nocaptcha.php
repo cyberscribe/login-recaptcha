@@ -39,6 +39,7 @@ class LoginNocaptcha {
         if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
             add_action('wp_head', array('LoginNocaptcha', 'enqueue_scripts_css'));
             add_action('woocommerce_login_form',array('LoginNocaptcha', 'nocaptcha_form'));
+            add_action('woocommerce_lostpassword_form',array('LoginNocaptcha', 'nocaptcha_form'));
         }
     }
 
@@ -163,7 +164,8 @@ class LoginNocaptcha {
 
     public static function authenticate($user_or_email, $username = null, $password = null) {
         if (isset($_SERVER['PHP_SELF']) && basename($_SERVER['PHP_SELF']) !== 'wp-login.php' && //calling context must be wp-login.php
-            !isset($_POST['woocommerce-login-nonce']) ) { //or a WooCommerce login form, otherwise bypass reCaptcha checking
+            !isset($_POST['woocommerce-login-nonce']) && !isset($_POST['woocommerce-lost-password-nonce']) ) { //or a WooCommerce form 
+            //otherwise bypass reCaptcha checking
             return $user_or_email;
         }
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
