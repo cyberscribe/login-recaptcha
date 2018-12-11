@@ -232,7 +232,8 @@ class LoginNocaptcha {
                 return $user_or_email; //not a sane response, prevent lockouts
             }
         } else {
-            if (isset($_POST['action']) && $_POST['action'] == 'lostpassword') {
+            update_option('login_nocaptcha_working', true);
+            if (isset($_POST['action']) && $_POST['action'] === 'lostpassword') {
                 return new WP_Error('no_captcha', __('<strong>ERROR</strong>&nbsp;: Please check the ReCaptcha box.','login_nocaptcha'));
             }
             if (is_wp_error($user_or_email)) {
