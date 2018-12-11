@@ -58,6 +58,8 @@ This plugin is not affiliated with or endorsed by Google in any way. Google is a
 
 = 1.2.6 =
 
+ * Added reCaptcha to lost password form
+ * Added Russian translation
  * Tested with 5.0
 
 = 1.2.5 =
