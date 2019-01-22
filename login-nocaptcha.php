@@ -4,7 +4,7 @@ Plugin Name: Login No Captcha reCAPTCHA
 Plugin URI: https://wordpress.org/plugins/login-recaptcha/
 Description: Adds a Google reCAPTCHA No Captcha checkbox to the login form, thwarting automated hacking attempts
 Author: Robert Peake
-Version: 1.3
+Version: 1.3.1
 Author URI: https://github.com/cyberscribe/login-recaptcha
 Text Domain: login_nocaptcha
 Domain Path: /languages/
@@ -56,10 +56,14 @@ class LoginNocaptcha {
         /* user-configurable values */
         add_option('login_nocaptcha_key', '');
         add_option('login_nocaptcha_secret', '');
+        add_option('login_nocaptcha_v3_key', '');
+        add_option('login_nocaptcha_v3_secret', '');
         
         /* user-configurable value checking public static functions */
         register_setting( 'login_nocaptcha', 'login_nocaptcha_key', 'LoginNocaptcha::filter_string' );
         register_setting( 'login_nocaptcha', 'login_nocaptcha_secret', 'LoginNocaptcha::filter_string' );
+        register_setting( 'login_nocaptcha', 'login_nocaptcha_v3_key', 'LoginNocaptcha::filter_string' );
+        register_setting( 'login_nocaptcha', 'login_nocaptcha_v3_secret', 'LoginNocaptcha::filter_string' );
 
         /* system values to determine if captcha is working and display useful error messages */
         add_option('login_nocaptcha_working', false);
@@ -88,7 +92,12 @@ class LoginNocaptcha {
     }
 
     public static function register_scripts_css() {
-        wp_register_script('login_nocaptcha_google_api', 'https://www.google.com/recaptcha/api.js?hl='.get_locale() );
+        $api_url = 'https://www.google.com/recaptcha/api.js?hl='.get_locale();
+        $v3_site_key = get_option('login_nocaptcha_v3_key');
+        if (!empty($v3_site_key)) {
+            $api_url .= '&render='.$v3_site_key;
+        }
+        wp_register_script('login_nocaptcha_google_api', $api_url );
         wp_register_style('login_nocaptcha_css', plugin_dir_url( __FILE__ ) . 'css/style.css');
     }
 
@@ -96,8 +105,12 @@ class LoginNocaptcha {
         if(!wp_script_is('login_nocaptcha_google_api','registered')) {
             LoginNocaptcha::register_scripts_css();
         }
-        wp_enqueue_script('login_nocaptcha_google_api');
-        wp_enqueue_style('login_nocaptcha_css');
+        if ( empty(get_option('login_nocaptcha_v3_key')) || 
+                (!empty($GLOBALS['pagenow']) && ($GLOBALS['pagenow'] == 'options-general.php' || 
+                $GLOBALS['pagenow'] == 'wp-login.php')) || (function_exists('is_account_page') && is_account_page()) ) {
+            wp_enqueue_script('login_nocaptcha_google_api');
+            wp_enqueue_style('login_nocaptcha_css');
+        }
     }
 
     public static function get_google_errors_as_string( $g_response ) {
@@ -114,7 +127,7 @@ class LoginNocaptcha {
     }
 
     public static function nocaptcha_form() {
-        echo sprintf('<div class="g-recaptcha" data-sitekey="%s" data-callback="submitEnable" data-expired-callback="submitDisable"></div>', get_option('login_nocaptcha_key'))."\n";
+        echo sprintf('<div class="g-recaptcha" id="g-recaptcha" data-sitekey="%s" data-callback="submitEnable" data-expired-callback="submitDisable"></div>', get_option('login_nocaptcha_key'))."\n";
         echo '<script>'."\n";
 		echo "    function submitEnable() {\n";
         echo "                 var button = document.getElementById('wp-submit');\n";
@@ -139,6 +152,11 @@ class LoginNocaptcha {
         echo "             }\n";
         echo "    function docready(fn){/in/.test(document.readyState)?setTimeout('docready('+fn+')',9):fn()}";
         echo "    docready(function() {submitDisable();});";
+        if (!empty(get_option('login_nocaptcha_v3_key'))) {
+            echo "    grecaptcha.ready( function() {";
+            echo "        grecaptcha.render('g-recaptcha');";
+            echo "    });";
+        }
 		echo '</script>'."\n";
         echo '<noscript>'."\n";
         echo '  <div style="width: 100%; height: 473px;">'."\n";
