@@ -3,7 +3,7 @@ Contributors: robertpeake, robert.peake
 Tags: google,nocaptcha,recaptcha,security,login,bots
 Requires at least: 3.0.0
 Tested up to: 5.1
-Stable tag: 1.3.1
+Stable tag: 1.3.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -56,6 +56,14 @@ This plugin is not affiliated with or endorsed by Google in any way. Google is a
 
 == Changelog ==
 
+= 1.3.3 =
+
+ * Fixed bug with fallback to cURL in cases where TLS is misconfigured
+
+= 1.3.2 =
+
+ * Compatibility fix for use of empty() language construct in php 5.x
+ 
 = 1.3.1 =
 
  * Added experimental support for v3 (hidden for now)
