@@ -27,6 +27,8 @@ class LoginNocaptcha {
             add_action('login_enqueue_scripts', array('LoginNocaptcha', 'enqueue_scripts_css'));
             add_action('admin_enqueue_scripts', array('LoginNocaptcha', 'enqueue_scripts_css'));
             add_action('login_form',array('LoginNocaptcha', 'nocaptcha_form'));
+            add_action('register_form',array('LoginNocaptcha', 'nocaptcha_form'), 99);
+            add_action('registration_errors',array('LoginNocaptcha', 'authenticate'));
             add_action('lostpassword_form',array('LoginNocaptcha', 'nocaptcha_form'));
             add_action('lostpassword_post',array('LoginNocaptcha', 'authenticate'));
             add_action('plugins_loaded', array('LoginNocaptcha', 'action_plugins_loaded'));
