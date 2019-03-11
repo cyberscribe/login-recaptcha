@@ -7,11 +7,11 @@ Stable tag: 1.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Adds a Google No Captcha ReCaptcha checkbox to your Wordpress and Woocommerce login and forgot password screens.
+Adds a Google No Captcha ReCaptcha checkbox to your Wordpress and Woocommerce login, forgot password, and user registration pages.
 
 == Description ==
 
-Adds a Google No Captcha ReCaptcha checkbox to your Wordpress and Woocommerce login and forgot password screens. Denies access to automated scripts while making it easy on humans to log in by checking a box. As Google says, it is "Tough on bots, easy on humans."
+Adds a Google No Captcha ReCaptcha checkbox to your Wordpress and Woocommerce login, forgot password, and user registration pages. Denies access to automated scripts while making it easy on humans to log in by checking a box. As Google says, it is "Tough on bots, easy on humans."
 
 == Installation ==
 
