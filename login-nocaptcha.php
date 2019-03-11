@@ -28,11 +28,11 @@ class LoginNocaptcha {
             add_action('admin_enqueue_scripts', array('LoginNocaptcha', 'enqueue_scripts_css'));
             add_action('login_form',array('LoginNocaptcha', 'nocaptcha_form'));
             add_action('register_form',array('LoginNocaptcha', 'nocaptcha_form'), 99);
-            add_action('registration_errors',array('LoginNocaptcha', 'authenticate'));
+            add_filter('registration_errors',array('LoginNocaptcha', 'authenticate'), 10, 3);
             add_action('lostpassword_form',array('LoginNocaptcha', 'nocaptcha_form'));
-            add_action('lostpassword_post',array('LoginNocaptcha', 'authenticate'));
+            add_action('lostpassword_post',array('LoginNocaptcha', 'authenticate'), 10, 1);
             add_action('plugins_loaded', array('LoginNocaptcha', 'action_plugins_loaded'));
-            add_action('authenticate', array('LoginNocaptcha', 'authenticate'), 30, 3);
+            add_filter('authenticate', array('LoginNocaptcha', 'authenticate'), 0, 3);
             add_filter( 'shake_error_codes', array('LoginNocaptcha', 'add_shake_error_codes') );
         }
     }

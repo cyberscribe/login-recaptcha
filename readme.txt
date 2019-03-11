@@ -56,13 +56,12 @@ This plugin is not affiliated with or endorsed by Google in any way. Google is a
 
 == Changelog ==
 
-<<<<<<< HEAD
 = 1.4 =
 
  * Added support for registration forms (thanks to d2roth)
+ * Align filter/hook calls with codex
+ * Increase priority (earlier execution) of login checking (prevents unnecessary alerts from e.g. WordFence)
 
-=======
->>>>>>> 4cd1bd27707124294535120ef4b741d36a7688c6
 = 1.3.3 =
 
  * Fixed bug with fallback to cURL in cases where TLS is misconfigured
