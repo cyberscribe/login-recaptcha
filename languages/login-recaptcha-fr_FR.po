@@ -1,0 +1,206 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Login No Captcha reCAPTCHA v1.2.2\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-02-11 21:53+0000\n"
+"PO-Revision-Date: 2018-04-07 14:27:22+0000\n"
+"Last-Translator: fdinh <frederic@dinh.mobi>\n"
+"Language-Team: French (France)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n>1;\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Poedit-Language: \n"
+"X-Poedit-Country: \n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;_n_noop:1,2;_c,_nc:4c,1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2;\n"
+"X-Poedit-Basepath: \n"
+"X-Poedit-Bookmarks: \n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Textdomain-Support: yes"
+
+#: admin.php:11
+#, php-format
+#@ login-recaptcha
+msgid "<a href=\"%s\" target=\"_blank\">Click here</a> to create or view keys for Google NoCaptcha."
+msgstr "<a href=\"%s\" target=\"_blank\">Cliquez ici</a> pour créer ou voir les clés pour Google NoCaptcha."
+
+#. translators: plugin header field 'Description'
+#: login-nocaptcha.php:0
+#@ login-recaptcha
+msgid "Adds a Google reCAPTCHA No Captcha checkbox to the login form, thwarting automated hacking attempts"
+msgstr "Ajoute un système Google reCAPTCHA No Captcha à l'écran de connexion contre les tentatives d'intrusion automatisées."
+
+#: admin.php:42
+#@ login-recaptcha
+msgid "Attempt to log in to your site admin from that new browser"
+msgstr "Tentez de vous connecter à l'administration du site avec ce nouveau navigateur"
+
+#: admin.php:27
+#: admin.php:45
+#@ login-recaptcha
+msgid "Delete Keys and Disable"
+msgstr "Effacer les clés et désactiver le plugin"
+
+#: admin.php:44
+#@ login-recaptcha
+msgid "Do <em>not</em> close this window or log out from this browser until you are confident that reCAPTCHA is working and you will be able to log in again. <br /><strong>You have been warned</strong>."
+msgstr "<b>Ne pas fermer cette fenêtre ni quitter ce navigateur</b> avant d'être sûr que reCAPTCHA fonctionne et que vous pourrez vous connecter de nouveau. <br /><strong>Vous êtes prévenu(e)</strong>."
+
+#: admin.php:32
+#@ login-recaptcha
+msgid "Example"
+msgstr "Exemple"
+
+#. translators: plugin header field 'AuthorURI'
+#: login-nocaptcha.php:0
+#@ login-recaptcha
+msgid "http://www.robertpeake.com/"
+msgstr "http://www.robertpeake.com/"
+
+#. translators: plugin header field 'PluginURI'
+#: login-nocaptcha.php:0
+#@ login-recaptcha
+msgid "https://wordpress.org/plugins/login-recaptcha/"
+msgstr "https://wordpress.org/plugins/login-recaptcha/"
+
+#: admin.php:38
+#@ login-recaptcha
+msgid "If the reCAPTCHA displays correctly above, proceed as follows:"
+msgstr "Si le reCAPTCHA s'affiche correctement, procédez ainsi :"
+
+#: admin.php:41
+#@ login-recaptcha
+msgid "If you are logged in on that new browser, log out"
+msgstr "Si vous êtes connecté(e) sur ce nouveau navigateur, déconnectez-vous."
+
+#: admin.php:45
+#, php-format
+#@ login-recaptcha
+msgid "If you have any problems logging in, click \"%s\" above and/or deactivate the plugin."
+msgstr "Si vous avez des problèmes pour vous connecter, cliquez \"%s\" ci-dessus et/ou désactivez le plugin."
+
+#: admin.php:37
+#@ login-recaptcha
+msgid "If you see an error message above, check your keys before proceeding."
+msgstr "Si vous voyez un message d'erreur, vérifiez vos clés avant de continuer."
+
+#. translators: plugin header field 'Name'
+#: login-nocaptcha.php:0
+#@ login-recaptcha
+msgid "Login No Captcha reCAPTCHA"
+msgstr "Login No Captcha reCAPTCHA"
+
+#: login-nocaptcha.php:48
+#@ login-recaptcha
+msgid "Login NoCaptcha"
+msgstr "Login NoCaptcha"
+
+#: login-nocaptcha.php:63
+#: login-nocaptcha.php:71
+#, php-format
+#@ login-recaptcha
+msgid "Login NoCaptcha has not been properly configured. <a href=\"%s\">Click here</a> to configure."
+msgstr "La configuration de Login NoCaptcha est incorrecte. <a href=\"%s\">Cliquez ici</a> pour reconfigurer."
+
+#: login-nocaptcha.php:216
+#: login-nocaptcha.php:223
+#, php-format
+#@ login-recaptcha
+msgid "Login NoCaptcha is not working. <a href=\"%s\">Please check your settings</a>."
+msgstr "Login NoCaptcha ne fonctionne pas. <a href=\"%s\">Veuillez vérifier vos réglages</a>."
+
+#: login-nocaptcha.php:201
+#, php-format
+#@ login-recaptcha
+msgid "Login NoCaptcha is not working. <a href=\"%s\">Please check your settings</a>. The message from Google was: %s"
+msgstr "Login NoCaptcha ne fonctionne pas. <a href=\"%s\">Veuillez vérifier vos réglages.</a>. Le message de Google est : %s"
+
+#: admin.php:6
+#@ login-recaptcha
+msgid "Login NoCaptcha Options"
+msgstr "Options de Login NoCaptcha"
+
+#: login-nocaptcha.php:48
+#@ login-recaptcha
+msgid "Login NoCatpcha Options"
+msgstr "Options de Login NoCaptcha"
+
+#: admin.php:35
+#@ login-recaptcha
+msgid "Next Steps"
+msgstr "Prochaines étapes"
+
+#: admin.php:40
+#@ login-recaptcha
+msgid "Open a completely different browser than this one"
+msgstr "Ouvrez un navigateur différent de celui en cours"
+
+#. translators: plugin header field 'Author'
+#: login-nocaptcha.php:0
+#@ login-recaptcha
+msgid "Robert Peake"
+msgstr "Robert Peake"
+
+#: admin.php:19
+#@ login-recaptcha
+msgid "Secret Key"
+msgstr "Clé secrète"
+
+#: admin.php:14
+#@ login-recaptcha
+msgid "Site Key"
+msgstr "Clé de site"
+
+#: login-nocaptcha.php:216
+#: login-nocaptcha.php:223
+#@ login-recaptcha
+msgid "The response from Google was not valid."
+msgstr "La réponse de Google était invalide."
+
+#: login-nocaptcha.php:105
+#@ login-recaptcha
+msgid "The response parameter is invalid or malformed."
+msgstr "Le paramètre de réponse est invalide ou malformé."
+
+#: login-nocaptcha.php:104
+#@ login-recaptcha
+msgid "The response parameter is missing."
+msgstr "Le paramètre de réponse manque."
+
+#: login-nocaptcha.php:103
+#@ login-recaptcha
+msgid "The secret parameter is invalid or malformed."
+msgstr "Le paramètre secret est invalide ou malformé."
+
+#: login-nocaptcha.php:102
+#@ login-recaptcha
+msgid "The secret parameter is missing."
+msgstr "Le paramètre secret manque."
+
+#: admin.php:25
+#@ login-recaptcha
+msgid "Save Changes"
+msgstr "Enregistrer les modifications"
+
+#. translators: plugin header field 'Version'
+#: login-nocaptcha.php:0
+#@ login-recaptcha
+msgid "1.2.2"
+msgstr ""
+
+#: login-nocaptcha.php:192
+#: login-nocaptcha.php:195
+#: login-nocaptcha.php:229
+#: login-nocaptcha.php:232
+#@ login-recaptcha
+msgid "<strong>ERROR</strong>&nbsp;: Please check the ReCaptcha box."
+msgstr "<strong>ERREUR</strong>&nbsp;: Merci de vérifier le ReCAPTCHA."
+
+#: login-nocaptcha.php:208
+#: login-nocaptcha.php:211
+#@ login-recaptcha
+msgid "<strong>ERROR</strong>&nbsp;: Incorrect ReCaptcha, please try again."
+msgstr "<strong>ERREUR</strong>&nbsp;: ReCaptcha incorrect, merci de recommencer."
+
