@@ -4,7 +4,7 @@ Plugin Name: Login No Captcha reCAPTCHA
 Plugin URI: https://wordpress.org/plugins/login-recaptcha/
 Description: Adds a Google reCAPTCHA No Captcha checkbox to the login form, thwarting automated hacking attempts
 Author: Robert Peake
-Version: 1.4.1
+Version: 1.5
 Author URI: https://github.com/cyberscribe/login-recaptcha
 Text Domain: login-recaptcha
 Domain Path: /languages/
@@ -32,8 +32,12 @@ class LoginNocaptcha {
             add_action('lostpassword_form',array('LoginNocaptcha', 'nocaptcha_form'));
             add_action('lostpassword_post',array('LoginNocaptcha', 'authenticate'), 10, 1);
             add_action('plugins_loaded', array('LoginNocaptcha', 'action_plugins_loaded'));
-            add_filter('authenticate', array('LoginNocaptcha', 'authenticate'), 0, 3);
+            add_filter('authenticate', array('LoginNocaptcha', 'authenticate'), 30, 3);
             add_filter( 'shake_error_codes', array('LoginNocaptcha', 'add_shake_error_codes') );
+        } else {
+            update_option('login_nocaptcha_working', false);
+            update_option('login_nocaptcha_message_type', 'update-nag');
+            update_option('login_nocaptcha_error', sprintf(__('Login NoCaptcha has not been properly configured. <a href="%s">Click here</a> to configure.','login-recaptcha'), 'options-general.php?page=login-recaptcha/admin.php'));
         }
     }
 
@@ -224,7 +228,7 @@ class LoginNocaptcha {
                             $user_or_email->add('no_captcha', __('<strong>ERROR</strong>&nbsp;: Please check the ReCaptcha box.','login-recaptcha'));
                             return $user_or_email;
                         } else {
-                            return new WP_Error('no_captcha', __('<strong>ERROR</strong>&nbsp;: Please check the ReCaptcha box.','login-recaptcha'));
+                            return new WP_Error('authentication_failed', __('<strong>ERROR</strong>&nbsp;: Please check the ReCaptcha box.','login-recaptcha'));
                         }
                     } else if ( isset($g_response->{'error-codes'}) && $g_response->{'error-codes'} && 
                                 (in_array('missing-input-secret', $g_response->{'error-codes'}) || in_array('invalid-input-secret', $g_response->{'error-codes'})) ) {
@@ -240,7 +244,7 @@ class LoginNocaptcha {
                             $user_or_email->add('invalid_captcha', __('<strong>ERROR</strong>&nbsp;: Incorrect ReCaptcha, please try again.','login-recaptcha'));
                             return $user_or_email;
                         } else {
-                            return new WP_Error('invalid_captcha', __('<strong>ERROR</strong>&nbsp;: Incorrect ReCaptcha, please try again.','login-recaptcha'));
+                            return new WP_Error('authentication_failed', __('<strong>ERROR</strong>&nbsp;: Incorrect ReCaptcha, please try again.','login-recaptcha'));
                         }
                     } else {
                         update_option('login_nocaptcha_working', false);
@@ -258,13 +262,13 @@ class LoginNocaptcha {
         } else {
             update_option('login_nocaptcha_working', true);
             if (isset($_POST['action']) && $_POST['action'] === 'lostpassword') {
-                return new WP_Error('no_captcha', __('<strong>ERROR</strong>&nbsp;: Please check the ReCaptcha box.','login-recaptcha'));
+                return new WP_Error('authentication_failed', __('<strong>ERROR</strong>&nbsp;: Please check the ReCaptcha box.','login-recaptcha'));
             }
             if (is_wp_error($user_or_email)) {
                 $user_or_email->add('no_captcha', __('<strong>ERROR</strong>&nbsp;: Please check the ReCaptcha box.','login-recaptcha'));
                 return $user_or_email;
             } else {
-                return new WP_Error('no_captcha', __('<strong>ERROR</strong>&nbsp;: Please check the ReCaptcha box.','login-recaptcha'));
+                return new WP_Error('authentication_failed', __('<strong>ERROR</strong>&nbsp;: Please check the ReCaptcha box.','login-recaptcha'));
             }
         }
     }
