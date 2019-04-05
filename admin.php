@@ -20,6 +20,11 @@ if (!is_admin()) {
                 </label></th>
             <td><input type="text" id="id_login_nocaptcha_secret" name="login_nocaptcha_secret" value="<?php echo get_option('login_nocaptcha_secret'); ?>" size="40" /></td>
         </tr>
+        <tr valign="top">
+                <th scope="row"><label for="id_login_nocaptcha_whitelist"><?php _e('Whitelist IP ( 1 per line )','login-recaptcha'); ?> (v2): </span>
+                </label></th>
+            <td><textarea type="text" id="id_login_nocaptcha_whitelist" name="login_nocaptcha_whitelist" cols="39" rows="5"><?php echo get_option('login_nocaptcha_whitelist'); ?></textarea></td>
+        </tr>
     </table>
     <div style="display: none;" id="experimental-v3">
         <table class="form-table form-v3">
@@ -32,6 +37,11 @@ if (!is_admin()) {
                     <th scope="row"><label for="id_login_nocaptcha_v3_secret"><?php _e('Secret Key','login-recaptcha'); ?> (v3): </span>
                     </label></th>
                 <td><input type="text" id="id_login_nocaptcha_v3_secret" name="login_nocaptcha_v3_secret" value="<?php echo get_option('login_nocaptcha_v3_secret'); ?>" size="40" /></td>
+            </tr>
+            <tr valign="top">
+                    <th scope="row"><label for="id_login_nocaptcha_v3_whitelist"><?php _e('Whitelist IP ( 1 per line )','login-recaptcha'); ?> (v3): </span>
+                    </label></th>
+                <td><textarea type="text" id="id_login_nocaptcha_v3_whitelist" name="login_nocaptcha_v3_whitelist" cols="39" rows="5"><?php echo get_option('login_nocaptcha_v3_whitelist'); ?></textarea></td>
             </tr>
         </table>
     </div>
@@ -68,6 +78,8 @@ if (!is_admin()) {
         $('#id_login_nocaptcha_secret').val('');
         $('#id_login_nocaptcha_v3_key').val('');
         $('#id_login_nocaptcha_v3_secret').val('');
+        $('#id_login_nocaptcha_whitelist').val('');
+        $('#id_login_nocaptcha_v3_whitelist').val('');
         $('#submit').trigger('click');
     });
 })(jQuery);
