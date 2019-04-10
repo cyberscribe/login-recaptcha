@@ -21,6 +21,8 @@ class LoginNocaptcha {
         /* get whitelist and convert to array */
         $whitelist = get_option('login_nocaptcha_whitelist');
         $whitelist = explode("\r\n", $whitelist);
+        /* get ip address */
+        $ip = LoginNoCaptcha::get_ip_address();
 
         add_action( 'plugins_loaded', array('LoginNocaptcha', 'load_textdomain') );
         add_action( 'admin_menu', array('LoginNocaptcha', 'register_menu_page' ));
@@ -38,7 +40,7 @@ class LoginNocaptcha {
             add_action('lostpassword_post',array('LoginNocaptcha', 'authenticate'), 10, 1);
             add_action('plugins_loaded', array('LoginNocaptcha', 'action_plugins_loaded'));
             /* if array is in whitelist, ignore authentication */
-            if ( !in_array($_SERVER['REMOTE_ADDR'], $whitelist) ) {
+            if ( !in_array($ip, $whitelist) ) {
                 add_filter('authenticate', array('LoginNocaptcha', 'authenticate'), 30, 3);
             }
             add_filter( 'shake_error_codes', array('LoginNocaptcha', 'add_shake_error_codes') );
@@ -47,6 +49,7 @@ class LoginNocaptcha {
             update_option('login_nocaptcha_message_type', 'update-nag');
             update_option('login_nocaptcha_error', sprintf(__('Login NoCaptcha has not been properly configured. <a href="%s">Click here</a> to configure.','login-recaptcha'), 'options-general.php?page=login-recaptcha/admin.php'));
         }
+
     }
 
     public static function action_plugins_loaded() {
@@ -73,15 +76,13 @@ class LoginNocaptcha {
         add_option('login_nocaptcha_v3_key', '');
         add_option('login_nocaptcha_v3_secret', '');
         add_option('login_nocaptcha_whitelist', '');
-        add_option('login_nocaptcha_v3_whitelist', '');
 
         /* user-configurable value checking public static functions */
         register_setting( 'login_nocaptcha', 'login_nocaptcha_key', 'LoginNocaptcha::filter_string' );
         register_setting( 'login_nocaptcha', 'login_nocaptcha_secret', 'LoginNocaptcha::filter_string' );
         register_setting( 'login_nocaptcha', 'login_nocaptcha_v3_key', 'LoginNocaptcha::filter_string' );
         register_setting( 'login_nocaptcha', 'login_nocaptcha_v3_secret', 'LoginNocaptcha::filter_string' );
-        register_setting( 'login_nocaptcha', 'login_nocaptcha_whitelist', 'LoginNocaptcha::filter_string' );
-        register_setting( 'login_nocaptcha', 'login_nocaptcha_v3_whitelist', 'LoginNocaptcha::filter_string' );
+        register_setting( 'login_nocaptcha', 'login_nocaptcha_whitelist', 'LoginNocaptcha::filter_whitelist' );
 
         /* system values to determine if captcha is working and display useful error messages */
         add_option('login_nocaptcha_working', false);
@@ -106,6 +107,23 @@ class LoginNocaptcha {
             return true;
         } else {
             return false;
+        }
+    }
+
+    public static function filter_whitelist( $string ) {
+        return preg_replace( '/[ \t]/', '', trim(filter_var($string, FILTER_SANITIZE_STRING)) ); //must consist of valid string characters, remove spaces
+    }
+
+    public static function get_ip_address() {
+        foreach (array('HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_FORWARDED', 'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED_FOR', 'HTTP_FORWARDED', 'REMOTE_ADDR') as $key){
+            if (array_key_exists($key, $_SERVER) === true){
+                foreach (explode(',', $_SERVER[$key]) as $ip){
+                    $ip = trim($ip); // just to be safe
+                    if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) !== false){
+                        return $ip;
+                    }
+                }
+            }
         }
     }
 
@@ -150,8 +168,10 @@ class LoginNocaptcha {
         /* get whitelist and convert to array */
         $whitelist = get_option('login_nocaptcha_whitelist');
         $whitelist = explode("\r\n", $whitelist);
+        /* get ip address */
+        $ip = LoginNoCaptcha::get_ip_address();
 
-        if ( !in_array($_SERVER['REMOTE_ADDR'], $whitelist) ) {
+        if ( !in_array($ip, $whitelist) ) {
             $login_nocaptcha_v3_key = get_option('login_nocaptcha_v3_key');
             echo sprintf('<div class="g-recaptcha" id="g-recaptcha" data-sitekey="%s" data-callback="submitEnable" data-expired-callback="submitDisable"></div>', get_option('login_nocaptcha_key'))."\n";
             echo '<script>'."\n";
@@ -204,6 +224,8 @@ class LoginNocaptcha {
             echo '      </div>'."\n";
             echo '</div><br>'."\n";
             echo '</noscript>'."\n";
+        } else {
+            echo 'Captcha bypassed by whitelist<br><br>';
         }
     }
 

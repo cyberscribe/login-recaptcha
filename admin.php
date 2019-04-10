@@ -38,11 +38,6 @@ if (!is_admin()) {
                     </label></th>
                 <td><input type="text" id="id_login_nocaptcha_v3_secret" name="login_nocaptcha_v3_secret" value="<?php echo get_option('login_nocaptcha_v3_secret'); ?>" size="40" /></td>
             </tr>
-            <tr valign="top">
-                    <th scope="row"><label for="id_login_nocaptcha_v3_whitelist"><?php _e('Whitelist IP ( 1 per line )','login-recaptcha'); ?> (v3): </span>
-                    </label></th>
-                <td><textarea type="text" id="id_login_nocaptcha_v3_whitelist" name="login_nocaptcha_v3_whitelist" cols="39" rows="5"><?php echo get_option('login_nocaptcha_v3_whitelist'); ?></textarea></td>
-            </tr>
         </table>
     </div>
     <p>
@@ -79,7 +74,6 @@ if (!is_admin()) {
         $('#id_login_nocaptcha_v3_key').val('');
         $('#id_login_nocaptcha_v3_secret').val('');
         $('#id_login_nocaptcha_whitelist').val('');
-        $('#id_login_nocaptcha_v3_whitelist').val('');
         $('#submit').trigger('click');
     });
 })(jQuery);
