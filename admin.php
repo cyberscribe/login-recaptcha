@@ -26,20 +26,6 @@ if (!is_admin()) {
             <td><textarea type="text" id="id_login_nocaptcha_whitelist" name="login_nocaptcha_whitelist" cols="39" rows="5"><?php echo get_option('login_nocaptcha_whitelist'); ?></textarea></td>
         </tr>
     </table>
-    <div style="display: none;" id="experimental-v3">
-        <table class="form-table form-v3">
-            <tr valign="top">
-                    <th scope="row"><label for="id_login_nocaptcha_v3_key"><?php _e('Site Key','login-recaptcha'); ?> (v3): </span>
-                    </label></th>
-                <td><input type="text" id="id_login_nocaptcha_v3_key" name="login_nocaptcha_v3_key" value="<?php echo get_option('login_nocaptcha_v3_key'); ?>" size="40" /></td>
-            </tr>
-            <tr valign="top">
-                    <th scope="row"><label for="id_login_nocaptcha_v3_secret"><?php _e('Secret Key','login-recaptcha'); ?> (v3): </span>
-                    </label></th>
-                <td><input type="text" id="id_login_nocaptcha_v3_secret" name="login_nocaptcha_v3_secret" value="<?php echo get_option('login_nocaptcha_v3_secret'); ?>" size="40" /></td>
-            </tr>
-        </table>
-    </div>
     <p>
     <input type="submit" name="submit" id="submit" class="button button-primary" value="<?php _e('Save Changes','login-recaptcha'); ?>">
     <button name="reset" id="reset" class="button">
@@ -71,8 +57,6 @@ if (!is_admin()) {
         e.preventDefault();
         $('#id_login_nocaptcha_key').val('');
         $('#id_login_nocaptcha_secret').val('');
-        $('#id_login_nocaptcha_v3_key').val('');
-        $('#id_login_nocaptcha_v3_secret').val('');
         $('#id_login_nocaptcha_whitelist').val('');
         $('#submit').trigger('click');
     });
