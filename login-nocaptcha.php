@@ -1,10 +1,10 @@
 <?php
 /*
-Plugin Name: Login No Captcha reCAPTCHA
+Plugin Name: Login No Captcha reCAPTCHA (Google)
 Plugin URI: https://wordpress.org/plugins/login-recaptcha/
-Description: Adds a Google reCAPTCHA No Captcha checkbox to the login form, thwarting automated hacking attempts
+Description: Adds a Google CAPTCHA checkbox to the login, registration, and forgot password forms, thwarting automated hacking attempts
 Author: Robert Peake
-Version: 1.5
+Version: 1.5.1
 Author URI: https://github.com/cyberscribe/login-recaptcha
 Text Domain: login-recaptcha
 Domain Path: /languages/
@@ -35,6 +35,7 @@ class LoginNocaptcha {
             add_action('admin_enqueue_scripts', array('LoginNocaptcha', 'enqueue_scripts_css'));
             add_action('login_form',array('LoginNocaptcha', 'nocaptcha_form'));
             add_action('register_form',array('LoginNocaptcha', 'nocaptcha_form'), 99);
+            add_action('signup_extra_fields',array('LoginNocaptcha', 'nocaptcha_form'), 99);
             add_filter('registration_errors',array('LoginNocaptcha', 'authenticate'), 10, 3);
             add_action('lostpassword_form',array('LoginNocaptcha', 'nocaptcha_form'));
             add_action('lostpassword_post',array('LoginNocaptcha', 'authenticate'), 10, 1);
@@ -42,12 +43,14 @@ class LoginNocaptcha {
             /* if array is in whitelist, ignore authentication */
             if ( !in_array($ip, $whitelist) ) {
                 add_filter('authenticate', array('LoginNocaptcha', 'authenticate'), 30, 3);
+                add_filter( 'shake_error_codes', array('LoginNocaptcha', 'add_shake_error_codes') );
             }
-            add_filter( 'shake_error_codes', array('LoginNocaptcha', 'add_shake_error_codes') );
         } else {
             update_option('login_nocaptcha_working', false);
             update_option('login_nocaptcha_message_type', 'update-nag');
             update_option('login_nocaptcha_error', sprintf(__('Login NoCaptcha has not been properly configured. <a href="%s">Click here</a> to configure.','login-recaptcha'), 'options-general.php?page=login-recaptcha/admin.php'));
+            add_action('woocommerce_register_post',array('LoginNocaptcha', 'authenticate'));
+add_action('woocommerce_register_form',array('LoginNocaptcha', 'nocaptcha_form'));
         }
 
     }
@@ -116,15 +119,17 @@ class LoginNocaptcha {
 
     public static function get_ip_address() {
         foreach (array('HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_FORWARDED', 'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED_FOR', 'HTTP_FORWARDED', 'REMOTE_ADDR') as $key){
-            if (array_key_exists($key, $_SERVER) === true){
-                foreach (explode(',', $_SERVER[$key]) as $ip){
+            if (array_key_exists($key, $_SERVER) === true) {
+                foreach (explode(',', $_SERVER[$key]) as $ip) {
                     $ip = trim($ip); // just to be safe
-                    if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) !== false){
+                    $ip = filter_var($ip, FILTER_VALIDATE_IP);
+                    if (!empty($ip)) {
                         return $ip;
                     }
                 }
             }
         }
+        return false;
     }
 
     public static function register_scripts_css() {
@@ -166,12 +171,16 @@ class LoginNocaptcha {
     public static function nocaptcha_form() {
 
         /* get whitelist and convert to array */
-        $whitelist = get_option('login_nocaptcha_whitelist');
-        $whitelist = explode("\r\n", $whitelist);
+        $whitelist_str = get_option('login_nocaptcha_whitelist');
+        if (!empty($whitelist_str)) {
+            $whitelist = explode("\r\n", trim($whitelist_str));
+        } else {
+            $whitelist = array();
+        }
         /* get ip address */
         $ip = LoginNoCaptcha::get_ip_address();
 
-        if ( !in_array($ip, $whitelist) ) {
+        if ( empty($ip) || empty($whitelist) || !in_array($ip, $whitelist) ) {
             $login_nocaptcha_v3_key = get_option('login_nocaptcha_v3_key');
             echo sprintf('<div class="g-recaptcha" id="g-recaptcha" data-sitekey="%s" data-callback="submitEnable" data-expired-callback="submitDisable"></div>', get_option('login_nocaptcha_key'))."\n";
             echo '<script>'."\n";
@@ -225,7 +234,7 @@ class LoginNocaptcha {
             echo '</div><br>'."\n";
             echo '</noscript>'."\n";
         } else {
-            echo 'Captcha bypassed by whitelist<br><br>';
+            echo '<p style="color: red; font-weight: bold;">'.sprintf('Captcha bypassed by whitelist for ip address %s', $ip).'</p>';
         }
     }
 
