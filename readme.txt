@@ -3,7 +3,11 @@ Contributors: robertpeake, robert.peake
 Tags: google,nocaptcha,recaptcha,security,login,bots
 Requires at least: 4.6
 Tested up to: 5.1.1
+<<<<<<< HEAD
 Stable tag: 1.6
+=======
+Stable tag: 1.5.1
+>>>>>>> 8c63d862412d7c60e1a0202caf7cd05ad7b9b536
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
