@@ -17,12 +17,19 @@ if ( !function_exists( 'add_action' ) ) {
 class LoginNocaptcha {
 
     public static function init() {
+
+        /* get whitelist and convert to array */
+        $whitelist = get_option('login_nocaptcha_whitelist');
+        $whitelist = explode("\r\n", $whitelist);
+        /* get ip address */
+        $ip = LoginNoCaptcha::get_ip_address();
+
         add_action( 'plugins_loaded', array('LoginNocaptcha', 'load_textdomain') );
         add_action( 'admin_menu', array('LoginNocaptcha', 'register_menu_page' ));
         add_action( 'admin_init', array('LoginNocaptcha', 'register_settings' ));
         add_action( 'admin_notices', array('LoginNocaptcha', 'admin_notices' ));
 
-        if (LoginNocaptcha::valid_key_secret(get_option('login_nocaptcha_key')) && 
+        if (LoginNocaptcha::valid_key_secret(get_option('login_nocaptcha_key')) &&
             LoginNocaptcha::valid_key_secret(get_option('login_nocaptcha_secret')) ) {
             add_action('login_enqueue_scripts', array('LoginNocaptcha', 'enqueue_scripts_css'));
             add_action('admin_enqueue_scripts', array('LoginNocaptcha', 'enqueue_scripts_css'));
@@ -32,13 +39,17 @@ class LoginNocaptcha {
             add_action('lostpassword_form',array('LoginNocaptcha', 'nocaptcha_form'));
             add_action('lostpassword_post',array('LoginNocaptcha', 'authenticate'), 10, 1);
             add_action('plugins_loaded', array('LoginNocaptcha', 'action_plugins_loaded'));
-            add_filter('authenticate', array('LoginNocaptcha', 'authenticate'), 30, 3);
+            /* if array is in whitelist, ignore authentication */
+            if ( !in_array($ip, $whitelist) ) {
+                add_filter('authenticate', array('LoginNocaptcha', 'authenticate'), 30, 3);
+            }
             add_filter( 'shake_error_codes', array('LoginNocaptcha', 'add_shake_error_codes') );
         } else {
             update_option('login_nocaptcha_working', false);
             update_option('login_nocaptcha_message_type', 'update-nag');
             update_option('login_nocaptcha_error', sprintf(__('Login NoCaptcha has not been properly configured. <a href="%s">Click here</a> to configure.','login-recaptcha'), 'options-general.php?page=login-recaptcha/admin.php'));
         }
+
     }
 
     public static function action_plugins_loaded() {
@@ -64,18 +75,20 @@ class LoginNocaptcha {
         add_option('login_nocaptcha_secret', '');
         add_option('login_nocaptcha_v3_key', '');
         add_option('login_nocaptcha_v3_secret', '');
-        
+        add_option('login_nocaptcha_whitelist', '');
+
         /* user-configurable value checking public static functions */
         register_setting( 'login_nocaptcha', 'login_nocaptcha_key', 'LoginNocaptcha::filter_string' );
         register_setting( 'login_nocaptcha', 'login_nocaptcha_secret', 'LoginNocaptcha::filter_string' );
         register_setting( 'login_nocaptcha', 'login_nocaptcha_v3_key', 'LoginNocaptcha::filter_string' );
         register_setting( 'login_nocaptcha', 'login_nocaptcha_v3_secret', 'LoginNocaptcha::filter_string' );
+        register_setting( 'login_nocaptcha', 'login_nocaptcha_whitelist', 'LoginNocaptcha::filter_whitelist' );
 
         /* system values to determine if captcha is working and display useful error messages */
         add_option('login_nocaptcha_working', false);
         add_option('login_nocaptcha_error', sprintf(__('Login NoCaptcha has not been properly configured. <a href="%s">Click here</a> to configure.','login-recaptcha'), 'options-general.php?page=login-recaptcha/admin.php'));
         add_option('login_nocaptcha_message_type', 'update-nag');
-        if (LoginNocaptcha::valid_key_secret(get_option('login_nocaptcha_key')) && 
+        if (LoginNocaptcha::valid_key_secret(get_option('login_nocaptcha_key')) &&
            LoginNocaptcha::valid_key_secret(get_option('login_nocaptcha_secret')) ) {
             update_option('login_nocaptcha_working', true);
         } else {
@@ -97,6 +110,23 @@ class LoginNocaptcha {
         }
     }
 
+    public static function filter_whitelist( $string ) {
+        return preg_replace( '/[ \t]/', '', trim(filter_var($string, FILTER_SANITIZE_STRING)) ); //must consist of valid string characters, remove spaces
+    }
+
+    public static function get_ip_address() {
+        foreach (array('HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_FORWARDED', 'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED_FOR', 'HTTP_FORWARDED', 'REMOTE_ADDR') as $key){
+            if (array_key_exists($key, $_SERVER) === true){
+                foreach (explode(',', $_SERVER[$key]) as $ip){
+                    $ip = trim($ip); // just to be safe
+                    if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) !== false){
+                        return $ip;
+                    }
+                }
+            }
+        }
+    }
+
     public static function register_scripts_css() {
         $api_url = 'https://www.google.com/recaptcha/api.js?hl='.get_locale();
         $v3_site_key = get_option('login_nocaptcha_v3_key');
@@ -112,8 +142,8 @@ class LoginNocaptcha {
             LoginNocaptcha::register_scripts_css();
         }
         $login_nocaptcha_v3_key = get_option('login_nocaptcha_v3_key');
-        if ( empty($login_nocaptcha_v3_key) || 
-                (!empty($GLOBALS['pagenow']) && ($GLOBALS['pagenow'] == 'options-general.php' || 
+        if ( empty($login_nocaptcha_v3_key) ||
+                (!empty($GLOBALS['pagenow']) && ($GLOBALS['pagenow'] == 'options-general.php' ||
                 $GLOBALS['pagenow'] == 'wp-login.php')) || (function_exists('is_account_page') && is_account_page()) ) {
             wp_enqueue_script('login_nocaptcha_google_api');
             wp_enqueue_style('login_nocaptcha_css');
@@ -125,7 +155,7 @@ class LoginNocaptcha {
         $codes = array( 'missing-input-secret' => __('The secret parameter is missing.','login-recaptcha'),
                         'invalid-input-secret' => __('The secret parameter is invalid or malformed.','login-recaptcha'),
                         'missing-input-response' => __('The response parameter is missing.','login-recaptcha'),
-                        'invalid-input-response' => __('The response parameter is invalid or malformed.','login-recaptcha') 
+                        'invalid-input-response' => __('The response parameter is invalid or malformed.','login-recaptcha')
                         );
         foreach ($g_response->{'error-codes'} as $code) {
             $string .= $codes[$code].' ';
@@ -134,63 +164,74 @@ class LoginNocaptcha {
     }
 
     public static function nocaptcha_form() {
-        $login_nocaptcha_v3_key = get_option('login_nocaptcha_v3_key');
-        echo sprintf('<div class="g-recaptcha" id="g-recaptcha" data-sitekey="%s" data-callback="submitEnable" data-expired-callback="submitDisable"></div>', get_option('login_nocaptcha_key'))."\n";
-        echo '<script>'."\n";
-		echo "    function submitEnable() {\n";
-        echo "                 var button = document.getElementById('wp-submit');\n";
-        echo "                 if (button === null) {\n";
-        echo "                     button = document.getElementById('submit');\n";
-        echo "                 }\n";
-        echo "                 if (button !== null) {\n";
-        echo "                     button.removeAttribute('disabled');\n";
-        echo "                 }\n";
-        echo "             }\n";
-		echo "    function submitDisable() {\n";
-        echo "                 var button = document.getElementById('wp-submit');\n";
-        // do not disable button with id "submit" in admin context, as this is the settings submit button
-        if (!is_admin()) { 
+
+        /* get whitelist and convert to array */
+        $whitelist = get_option('login_nocaptcha_whitelist');
+        $whitelist = explode("\r\n", $whitelist);
+        /* get ip address */
+        $ip = LoginNoCaptcha::get_ip_address();
+
+        if ( !in_array($ip, $whitelist) ) {
+            $login_nocaptcha_v3_key = get_option('login_nocaptcha_v3_key');
+            echo sprintf('<div class="g-recaptcha" id="g-recaptcha" data-sitekey="%s" data-callback="submitEnable" data-expired-callback="submitDisable"></div>', get_option('login_nocaptcha_key'))."\n";
+            echo '<script>'."\n";
+            echo "    function submitEnable() {\n";
+            echo "                 var button = document.getElementById('wp-submit');\n";
             echo "                 if (button === null) {\n";
             echo "                     button = document.getElementById('submit');\n";
             echo "                 }\n";
+            echo "                 if (button !== null) {\n";
+            echo "                     button.removeAttribute('disabled');\n";
+            echo "                 }\n";
+            echo "             }\n";
+            echo "    function submitDisable() {\n";
+            echo "                 var button = document.getElementById('wp-submit');\n";
+            // do not disable button with id "submit" in admin context, as this is the settings submit button
+            if (!is_admin()) {
+                echo "                 if (button === null) {\n";
+                echo "                     button = document.getElementById('submit');\n";
+                echo "                 }\n";
+            }
+            echo "                 if (button !== null) {\n";
+            echo "                     button.setAttribute('disabled','disabled');\n";
+            echo "                 }\n";
+            echo "             }\n";
+            echo "    function docready(fn){/in/.test(document.readyState)?setTimeout('docready('+fn+')',9):fn()}";
+            echo "    docready(function() {submitDisable();});";
+            if (!empty($login_nocaptcha_v3_key)) {
+                echo "    grecaptcha.ready( function() {";
+                echo "        grecaptcha.render('g-recaptcha');";
+                echo "    });";
+            }
+            echo '</script>'."\n";
+            echo '<noscript>'."\n";
+            echo '  <div style="width: 100%; height: 473px;">'."\n";
+            echo '      <div style="width: 100%; height: 422px; position: relative;">'."\n";
+            echo '          <div style="width: 302px; height: 422px; position: relative;">'."\n";
+            echo sprintf('              <iframe src="https://www.google.com/recaptcha/api/fallback?k=%s"', get_option('login_nocaptcha_key'))."\n";
+            echo '                  frameborder="0" title="captcha" scrolling="no"'."\n";
+            echo '                  style="width: 302px; height:422px; border-style: none;">'."\n";
+            echo '              </iframe>'."\n";
+            echo '          </div>'."\n";
+            echo '          <div style="width: 100%; height: 60px; border-style: none;'."\n";
+            echo '              bottom: 12px; left: 25px; margin: 0px; padding: 0px; right: 25px; background: #f9f9f9; border: 1px solid #c1c1c1; border-radius: 3px;">'."\n";
+            echo '              <textarea id="g-recaptcha-response" name="g-recaptcha-response"'."\n";
+            echo '                  title="response" class="g-recaptcha-response"'."\n";
+            echo '                  style="width: 250px; height: 40px; border: 1px solid #c1c1c1;'."\n";
+            echo '                  margin: 10px 25px; padding: 0px; resize: none;" value="">'."\n";
+            echo '              </textarea>'."\n";
+            echo '          </div>'."\n";
+            echo '      </div>'."\n";
+            echo '</div><br>'."\n";
+            echo '</noscript>'."\n";
+        } else {
+            echo 'Captcha bypassed by whitelist<br><br>';
         }
-        echo "                 if (button !== null) {\n";
-        echo "                     button.setAttribute('disabled','disabled');\n";
-        echo "                 }\n";
-        echo "             }\n";
-        echo "    function docready(fn){/in/.test(document.readyState)?setTimeout('docready('+fn+')',9):fn()}";
-        echo "    docready(function() {submitDisable();});";
-        if (!empty($login_nocaptcha_v3_key)) {
-            echo "    grecaptcha.ready( function() {";
-            echo "        grecaptcha.render('g-recaptcha');";
-            echo "    });";
-        }
-		echo '</script>'."\n";
-        echo '<noscript>'."\n";
-        echo '  <div style="width: 100%; height: 473px;">'."\n";
-        echo '      <div style="width: 100%; height: 422px; position: relative;">'."\n";
-        echo '          <div style="width: 302px; height: 422px; position: relative;">'."\n";
-        echo sprintf('              <iframe src="https://www.google.com/recaptcha/api/fallback?k=%s"', get_option('login_nocaptcha_key'))."\n";
-        echo '                  frameborder="0" title="captcha" scrolling="no"'."\n";
-        echo '                  style="width: 302px; height:422px; border-style: none;">'."\n";
-        echo '              </iframe>'."\n";
-        echo '          </div>'."\n";
-        echo '          <div style="width: 100%; height: 60px; border-style: none;'."\n";
-        echo '              bottom: 12px; left: 25px; margin: 0px; padding: 0px; right: 25px; background: #f9f9f9; border: 1px solid #c1c1c1; border-radius: 3px;">'."\n";
-        echo '              <textarea id="g-recaptcha-response" name="g-recaptcha-response"'."\n";
-        echo '                  title="response" class="g-recaptcha-response"'."\n";
-        echo '                  style="width: 250px; height: 40px; border: 1px solid #c1c1c1;'."\n";
-        echo '                  margin: 10px 25px; padding: 0px; resize: none;" value="">'."\n";
-        echo '              </textarea>'."\n";
-        echo '          </div>'."\n";
-        echo '      </div>'."\n";
-        echo '</div><br>'."\n";
-        echo '</noscript>'."\n";
     }
 
     public static function authenticate($user_or_email, $username = null, $password = null) {
         if (isset($_SERVER['PHP_SELF']) && basename($_SERVER['PHP_SELF']) !== 'wp-login.php' && //calling context must be wp-login.php
-            !isset($_POST['woocommerce-login-nonce']) && !isset($_POST['woocommerce-lost-password-nonce']) ) { //or a WooCommerce form 
+            !isset($_POST['woocommerce-login-nonce']) && !isset($_POST['woocommerce-lost-password-nonce']) ) { //or a WooCommerce form
             //otherwise bypass reCaptcha checking
             return $user_or_email;
         }
@@ -230,11 +271,11 @@ class LoginNocaptcha {
                         } else {
                             return new WP_Error('authentication_failed', __('<strong>ERROR</strong>&nbsp;: Please check the ReCaptcha box.','login-recaptcha'));
                         }
-                    } else if ( isset($g_response->{'error-codes'}) && $g_response->{'error-codes'} && 
+                    } else if ( isset($g_response->{'error-codes'}) && $g_response->{'error-codes'} &&
                                 (in_array('missing-input-secret', $g_response->{'error-codes'}) || in_array('invalid-input-secret', $g_response->{'error-codes'})) ) {
                         update_option('login_nocaptcha_working', false);
                         update_option('login_nocaptcha_google_error', 'error');
-                        update_option('login_nocaptcha_error', sprintf(__('Login NoCaptcha is not working. <a href="%s">Please check your settings</a>. The message from Google was: %s', 'login-recaptcha'), 
+                        update_option('login_nocaptcha_error', sprintf(__('Login NoCaptcha is not working. <a href="%s">Please check your settings</a>. The message from Google was: %s', 'login-recaptcha'),
                                                                'options-general.php?page=login-recaptcha/admin.php',
                                                                 self::get_google_errors_as_string($g_response)));
                         return $user_or_email; //invalid secret entered; prevent lockouts
