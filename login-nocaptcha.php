@@ -173,10 +173,6 @@ add_action('woocommerce_register_form',array('LoginNocaptcha', 'nocaptcha_form')
         $ip = LoginNoCaptcha::get_ip_address();
 
         if ( empty($ip) || empty($whitelist) || !in_array($ip, $whitelist) ) {
-<<<<<<< HEAD
-=======
-            $login_nocaptcha_v3_key = get_option('login_nocaptcha_v3_key');
->>>>>>> 8c63d862412d7c60e1a0202caf7cd05ad7b9b536
             echo sprintf('<div class="g-recaptcha" id="g-recaptcha" data-sitekey="%s" data-callback="submitEnable" data-expired-callback="submitDisable"></div>', get_option('login_nocaptcha_key'))."\n";
             echo '<script>'."\n";
             echo "    function submitEnable() {\n";
