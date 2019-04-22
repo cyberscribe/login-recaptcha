@@ -4,7 +4,7 @@ Plugin Name: Login No Captcha reCAPTCHA (Google)
 Plugin URI: https://wordpress.org/plugins/login-recaptcha/
 Description: Adds a Google CAPTCHA checkbox to the login, registration, and forgot password forms, thwarting automated hacking attempts
 Author: Robert Peake
-Version: 1.6
+Version: 1.6.1
 Author URI: https://github.com/cyberscribe/login-recaptcha
 Text Domain: login-recaptcha
 Domain Path: /languages/
@@ -18,36 +18,37 @@ class LoginNocaptcha {
 
     public static function init() {
 
-        /* get whitelist and convert to array */
-        $whitelist = get_option('login_nocaptcha_whitelist');
-        $whitelist = explode("\r\n", $whitelist);
-        /* get ip address */
-        $ip = LoginNoCaptcha::get_ip_address();
-
         add_action( 'plugins_loaded', array('LoginNocaptcha', 'load_textdomain') );
         add_action( 'admin_menu', array('LoginNocaptcha', 'register_menu_page' ));
         add_action( 'admin_init', array('LoginNocaptcha', 'register_settings' ));
         add_action( 'admin_notices', array('LoginNocaptcha', 'admin_notices' ));
 
+        delete_option('login_nocaptcha_v3_key');
+        delete_option('login_nocaptcha_v3_secret');
+
         if (LoginNocaptcha::valid_key_secret(get_option('login_nocaptcha_key')) &&
             LoginNocaptcha::valid_key_secret(get_option('login_nocaptcha_secret')) ) {
             add_action('login_enqueue_scripts', array('LoginNocaptcha', 'enqueue_scripts_css'));
             add_action('admin_enqueue_scripts', array('LoginNocaptcha', 'enqueue_scripts_css'));
+
+            /* Handle form display logic downstream of this */
             add_action('login_form',array('LoginNocaptcha', 'nocaptcha_form'));
             add_action('register_form',array('LoginNocaptcha', 'nocaptcha_form'), 99);
             add_action('signup_extra_fields',array('LoginNocaptcha', 'nocaptcha_form'), 99);
-            add_filter('registration_errors',array('LoginNocaptcha', 'authenticate'), 10, 3);
             add_action('lostpassword_form',array('LoginNocaptcha', 'nocaptcha_form'));
-            add_action('lostpassword_post',array('LoginNocaptcha', 'authenticate'), 10, 1);
-            add_action('plugins_loaded', array('LoginNocaptcha', 'action_plugins_loaded'));
-            /* if array is in whitelist, ignore authentication */
-            if ( !in_array($ip, $whitelist) ) {
+
+            /* if array is in whitelist, do not hook in captcha for login, registration, or lost password */
+            if ( !LoginNocaptcha::ip_in_whitelist() ) {
+                add_filter('registration_errors',array('LoginNocaptcha', 'authenticate'), 10, 3);
+                add_action('lostpassword_post',array('LoginNocaptcha', 'authenticate'), 10, 1);
                 add_filter('authenticate', array('LoginNocaptcha', 'authenticate'), 30, 3);
-                add_filter( 'shake_error_codes', array('LoginNocaptcha', 'add_shake_error_codes') );
+                add_filter('shake_error_codes', array('LoginNocaptcha', 'add_shake_error_codes') );
+                add_action('plugins_loaded', array('LoginNocaptcha', 'action_plugins_loaded'));
+                delete_option('login_nocaptcha_notice');
             }
         } else {
-            update_option('login_nocaptcha_working', false);
-            update_option('login_nocaptcha_message_type', 'update-nag');
+            delete_option('login_nocaptcha_working');
+            update_option('login_nocaptcha_message_type', 'notice-error');
             update_option('login_nocaptcha_error', sprintf(__('Login NoCaptcha has not been properly configured. <a href="%s">Click here</a> to configure.','login-recaptcha'), 'options-general.php?page=login-recaptcha/admin.php'));
             add_action('woocommerce_register_post',array('LoginNocaptcha', 'authenticate'));
 add_action('woocommerce_register_form',array('LoginNocaptcha', 'nocaptcha_form'));
@@ -86,15 +87,15 @@ add_action('woocommerce_register_form',array('LoginNocaptcha', 'nocaptcha_form')
         register_setting( 'login_nocaptcha', 'login_nocaptcha_whitelist', 'LoginNocaptcha::filter_whitelist' );
 
         /* system values to determine if captcha is working and display useful error messages */
-        add_option('login_nocaptcha_working', false);
+        delete_option('login_nocaptcha_working');
         add_option('login_nocaptcha_error', sprintf(__('Login NoCaptcha has not been properly configured. <a href="%s">Click here</a> to configure.','login-recaptcha'), 'options-general.php?page=login-recaptcha/admin.php'));
-        add_option('login_nocaptcha_message_type', 'update-nag');
+        add_option('login_nocaptcha_message_type', 'notice-error');
         if (LoginNocaptcha::valid_key_secret(get_option('login_nocaptcha_key')) &&
            LoginNocaptcha::valid_key_secret(get_option('login_nocaptcha_secret')) ) {
             update_option('login_nocaptcha_working', true);
         } else {
-            update_option('login_nocaptcha_working', false);
-            update_option('login_nocaptcha_message_type', 'update-nag');
+            delete_option('login_nocaptcha_working');
+            update_option('login_nocaptcha_message_type', 'notice-error');
             update_option('login_nocaptcha_error', sprintf(__('Login NoCaptcha has not been properly configured. <a href="%s">Click here</a> to configure.','login-recaptcha'), 'options-general.php?page=login-recaptcha/admin.php'));
         }
     }
@@ -130,6 +131,27 @@ add_action('woocommerce_register_form',array('LoginNocaptcha', 'nocaptcha_form')
         return false;
     }
 
+    public static function ip_in_whitelist() {
+
+        /* get whitelist and convert to array */
+        $whitelist_str = get_option('login_nocaptcha_whitelist');
+        if (!empty($whitelist_str)) {
+            $whitelist = explode("\r\n", trim($whitelist_str));
+        } else {
+            $whitelist = array();
+        }
+
+        /* get ip address */
+        $ip = LoginNoCaptcha::get_ip_address();
+
+        if ( !empty($ip) && !empty($whitelist) && in_array($ip, $whitelist) ) {
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
     public static function register_scripts_css() {
         $api_url = 'https://www.google.com/recaptcha/api.js?hl='.get_locale();
         wp_register_script('login_nocaptcha_google_api', $api_url );
@@ -162,17 +184,7 @@ add_action('woocommerce_register_form',array('LoginNocaptcha', 'nocaptcha_form')
 
     public static function nocaptcha_form() {
 
-        /* get whitelist and convert to array */
-        $whitelist_str = get_option('login_nocaptcha_whitelist');
-        if (!empty($whitelist_str)) {
-            $whitelist = explode("\r\n", trim($whitelist_str));
-        } else {
-            $whitelist = array();
-        }
-        /* get ip address */
-        $ip = LoginNoCaptcha::get_ip_address();
-
-        if ( empty($ip) || empty($whitelist) || !in_array($ip, $whitelist) ) {
+        if (!LoginNocaptcha::ip_in_whitelist()) {
             echo sprintf('<div class="g-recaptcha" id="g-recaptcha" data-sitekey="%s" data-callback="submitEnable" data-expired-callback="submitDisable"></div>', get_option('login_nocaptcha_key'))."\n";
             echo '<script>'."\n";
             echo "    function submitEnable() {\n";
@@ -183,6 +195,12 @@ add_action('woocommerce_register_form',array('LoginNocaptcha', 'nocaptcha_form')
             echo "                 if (button !== null) {\n";
             echo "                     button.removeAttribute('disabled');\n";
             echo "                 }\n";
+            if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
+                echo "                 var woo_buttons = ".json_encode(array('.woocommerce-form-login button','.woocommerce-form-register button','.woocommerce-ResetPassword button')).";\n"; 
+                echo "                 jQuery.each(woo_buttons,function(i,btn) {\n";
+                echo "                     jQuery(btn).removeAttr('disabled');\n";
+                echo "                 });\n";
+            }
             echo "             }\n";
             echo "    function submitDisable() {\n";
             echo "                 var button = document.getElementById('wp-submit');\n";
@@ -195,6 +213,12 @@ add_action('woocommerce_register_form',array('LoginNocaptcha', 'nocaptcha_form')
             echo "                 if (button !== null) {\n";
             echo "                     button.setAttribute('disabled','disabled');\n";
             echo "                 }\n";
+            if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
+                echo "                 var woo_buttons = ".json_encode(array('.woocommerce-form-login button','.woocommerce-form-register button','.woocommerce-ResetPassword button')).";\n"; 
+                echo "                 jQuery.each(woo_buttons,function(i,btn) {\n";
+                echo "                     jQuery(btn).attr('disabled','disabled');\n";
+                echo "                 });\n";
+            }
             echo "             }\n";
             echo "    function docready(fn){/in/.test(document.readyState)?setTimeout('docready('+fn+')',9):fn()}";
             echo "    docready(function() {submitDisable();});";
@@ -220,7 +244,10 @@ add_action('woocommerce_register_form',array('LoginNocaptcha', 'nocaptcha_form')
             echo '</div><br>'."\n";
             echo '</noscript>'."\n";
         } else {
-            echo '<p style="color: red; font-weight: bold;">'.sprintf('Captcha bypassed by whitelist for ip address %s', $ip).'</p>';
+            update_option('login_nocaptcha_notice', time());
+            update_option('login_nocaptcha_message_type', 'notice-info');
+            update_option('login_nocaptcha_error', sprintf(__('Captcha bypassed by whitelist for ip address %s',    'login-recaptcha'), LoginNoCaptcha::get_ip_address()) );
+            echo '<p style="color: red; font-weight: bold;">'.sprintf(__('Captcha bypassed by whitelist for ip address %s','login-recaptcha'), LoginNoCaptcha::get_ip_address()).'</p>';
         }
     }
 
@@ -232,6 +259,8 @@ add_action('woocommerce_register_form',array('LoginNocaptcha', 'nocaptcha_form')
         if (isset($_SERVER['PHP_SELF']) && basename($_SERVER['PHP_SELF']) !== 'wp-login.php' && //calling context must be wp-login.php
             !isset($_POST['woocommerce-login-nonce']) && !isset($_POST['woocommerce-lost-password-nonce']) && !isset($_POST['woocommerce-register-nonce']) ) { //or a WooCommerce form
             //bypass reCaptcha checking
+            update_option('login_nocaptcha_notice', time());
+            update_option('login_nocaptcha_message_type', 'notice-error');
             update_option('login_nocaptcha_error', sprintf(__('Login NoCaptcha was bypassed on login page: %s.','login-recaptcha'),basename($_SERVER['PHP_SELF'])));
             return $user_or_email;
         }
@@ -254,6 +283,8 @@ add_action('woocommerce_register_form',array('LoginNocaptcha', 'nocaptcha_form')
                 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
                 $result = curl_exec($ch);
                 $g_response = json_decode( $result );
+                update_option('login_nocaptcha_notice', time());
+                update_option('login_nocaptcha_message_type', 'notice-warning');
                 update_option('login_nocaptcha_error', sprintf(__('Login NoCaptcha fell back to using cURL instead of wp_remote_post(). The error message was: %s.','login-recaptcha'), $error_msg) );
             } else {
                 $g_response = json_decode($result['body']);
@@ -273,7 +304,8 @@ add_action('woocommerce_register_form',array('LoginNocaptcha', 'nocaptcha_form')
                         }
                     } else if ( isset($g_response->{'error-codes'}) && $g_response->{'error-codes'} &&
                                 (in_array('missing-input-secret', $g_response->{'error-codes'}) || in_array('invalid-input-secret', $g_response->{'error-codes'})) ) {
-                        update_option('login_nocaptcha_working', false);
+                        delete_option('login_nocaptcha_working');
+                        update_option('login_nocaptcha_notice', time());
                         update_option('login_nocaptcha_google_error', 'error');
                         update_option('login_nocaptcha_error', sprintf(__('Login NoCaptcha is not working. <a href="%s">Please check your settings</a>. The message from Google was: %s', 'login-recaptcha'),
                                                                'options-general.php?page=login-recaptcha/admin.php',
@@ -288,14 +320,16 @@ add_action('woocommerce_register_form',array('LoginNocaptcha', 'nocaptcha_form')
                             return new WP_Error('authentication_failed', __('<strong>ERROR</strong>&nbsp;: Incorrect ReCaptcha, please try again.','login-recaptcha'));
                         }
                     } else {
-                        update_option('login_nocaptcha_working', false);
+                        delete_option('login_nocaptcha_working');
+                        update_option('login_nocaptcha_notice', time());
                         update_option('login_nocaptcha_google_error', 'error');
                         update_option('login_nocaptcha_error', sprintf(__('Login NoCaptcha is not working. <a href="%s">Please check your settings</a>.', 'login-recaptcha'), 'options-general.php?page=login-recaptcha/admin.php').' '.__('The response from Google was not valid.','login-recaptcha'));
                         return $user_or_email; //not a sane response, prevent lockouts
                     }
                 }
             } else {
-                update_option('login_nocaptcha_working', false);
+                delete_option('login_nocaptcha_working');
+                update_option('login_nocaptcha_notice',time());
                 update_option('login_nocaptcha_google_error', 'error');
                 update_option('login_nocaptcha_error', sprintf(__('Login NoCaptcha is not working. <a href="%s">Please check your settings</a>.', 'login-recaptcha'), 'options-general.php?page=login-recaptcha/admin.php').' '.__('The response from Google was not valid.','login-recaptcha'));
                 return $user_or_email; //not a sane response, prevent lockouts
@@ -315,8 +349,13 @@ add_action('woocommerce_register_form',array('LoginNocaptcha', 'nocaptcha_form')
     }
 
     public static function admin_notices() {
-        if(false == get_option('login_nocaptcha_working')) {
-            echo '<div class="update-nag">'."\n";
+        // not working, or notice fired in last 30 seconds
+        if(!empty(get_option('login_nocaptcha_error')) && (empty(get_option('login_nocaptcha_working')) || (time() - get_option('login_nocaptcha_notice') < 30))) {
+            $message_type = get_option('login_nocaptcha_message_type');
+            if (empty($message_type)) {
+                $message_type = 'notice-info';
+            }
+            echo '<div class="notice '.$message_type.' is-dismissible">'."\n";
             echo '    <p>'."\n";
             echo get_option('login_nocaptcha_error');
             echo '    </p>'."\n";

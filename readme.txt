@@ -3,7 +3,7 @@ Contributors: robertpeake, robert.peake
 Tags: google,nocaptcha,recaptcha,security,login,bots
 Requires at least: 4.6
 Tested up to: 5.1.1
-Stable tag: 1.6
+Stable tag: 1.6.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -28,6 +28,10 @@ The No Captcha is a very simple, Google-supported test to quickly deny access to
 = There are a lot of other plugins for this, why should I install <em>this</em> one? =
 
 I've gone to great lengths to try to make sure this plugin is easy to use and install, that it is compatible with different Wordpress configurations, supports multiple languages, and that you won't accidentally lock yourself out of the admin by using it. I use it myself on my own sites as well. So far, it just works.
+
+= Does this plugin support [insert name] custom login page plugin? =
+
+Probably not. Many custom login form plugins do not call the standard <a href="https://codex.wordpress.org/Plugin_API/Action_Reference/login_form">login_form</a> action hook from their login forms, making it impossible to correctly render the captcha after the password prompt. For this reason, this plugin only supports the default wp-login.php and WooCommerce forms. Many such plugins do offer captcha fields (sometimes as a paid upgrade). This plugin tries to do just a few things well.
 
 = Does this plugin add a CAPTCHA to comment forms? =
 
@@ -64,7 +68,12 @@ This plugin is not affiliated with or endorsed by Google in any way. Google is a
 
 == Changelog ==
 
-= 1.5.1 =
+= 1.6.1 = 
+
+ * Disable submit buttons via javascript on Woo forms
+ * Improve error messaging
+
+= 1.6 =
 
  * Added IP whitelist functionality (thanks @farley1122)
  * More comprehensive protection of signup endpoints, including wp-signup.php and my-account page
