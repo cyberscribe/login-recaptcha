@@ -3,7 +3,7 @@ Contributors: robertpeake, robert.peake
 Tags: google,nocaptcha,recaptcha,security,login,bots
 Requires at least: 4.6
 Tested up to: 5.1.1
-Stable tag: 1.6.1
+Stable tag: 1.6.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -67,6 +67,10 @@ This plugin is not affiliated with or endorsed by Google in any way. Google is a
 2. Login screen once configured
 
 == Changelog ==
+
+= 1.6.2 =
+
+ * Resolve fatal error with old versions of PHP (reported on 5.4.45)
 
 = 1.6.1 = 
 
