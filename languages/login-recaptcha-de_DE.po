@@ -1,0 +1,210 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Login No Captcha reCAPTCHA (Google)\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-05-07 10:54+0000\n"
+"PO-Revision-Date: 2019-05-07 11:24+0000\n"
+"Last-Translator: *bad boy*\n"
+"Language-Team: Deutsch\n"
+"Language: de-DE\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Loco-Version: 2.2.2; wp-5.1.1"
+
+#: admin.php:11
+#, php-format
+msgid ""
+"<a href=\"%s\" target=\"_blank\">Click here</a> to create or view keys for "
+"Google NoCaptcha."
+msgstr ""
+"<a href=\"%s\" target=\"_blank\">Hier klicken</a>, um Schlüssel für Google "
+"NoCaptcha zu erstellen oder anzuzeigen."
+
+#: login-nocaptcha.php:320 login-nocaptcha.php:323
+msgid "<strong>ERROR</strong>&nbsp;: Incorrect ReCaptcha, please try again."
+msgstr ""
+"<strong>FEHLER</strong>&nbsp;: Falsches ReCaptcha, bitte erneut versuchen."
+
+#: login-nocaptcha.php:303 login-nocaptcha.php:306 login-nocaptcha.php:343 
+#: login-nocaptcha.php:346 login-nocaptcha.php:349
+msgid "<strong>ERROR</strong>&nbsp;: Please check the ReCaptcha box."
+msgstr ""
+"<strong>FEHLER</strong>&nbsp;: Bitte kreuzen Sie das ReCaptcha-Kästchen an."
+
+#. Description of the plugin
+msgid ""
+"Adds a Google CAPTCHA checkbox to the login, registration, and forgot "
+"password forms, thwarting automated hacking attempts"
+msgstr ""
+"Fügt den Anmelde-, Registrierungs- und Passwort-Formularen ein "
+"Kontrollkästchen für Google CAPTCHA hinzu, wodurch automatisierte Hacking-"
+"Versuche verhindert werden"
+
+#: admin.php:47
+msgid "Attempt to log in to your site admin from that new browser"
+msgstr ""
+"Versuchen Sie, sich mit diesem neuen Browser bei Ihrem Site-Administrator "
+"anzumelden"
+
+#: login-nocaptcha.php:252 login-nocaptcha.php:253
+#, php-format
+msgid "Captcha bypassed by whitelist for ip address %s"
+msgstr "Captcha von Whitelist für IP-Adresse %s umgangen"
+
+#: admin.php:32 admin.php:50
+msgid "Delete Keys and Disable"
+msgstr "Schlüssel löschen und deaktivieren"
+
+#: admin.php:49
+msgid ""
+"Do <em>not</em> close this window or log out from this browser until you are "
+"confident that reCAPTCHA is working and you will be able to log in again. "
+"<br /><strong>You have been warned</strong>."
+msgstr ""
+"Schließen Sie <em>nicht</em> dieses Fenster, oder melden Sie sich von diesem "
+"Browser ab, bis Sie sicher sind, dass reCAPTCHA funktioniert und Sie sich "
+"erneut anmelden können. <br/><strong>Sie wurden gewarnt.</strong>"
+
+#: admin.php:37
+msgid "Example"
+msgstr "Beispiel"
+
+#. Author URI of the plugin
+msgid "https://github.com/cyberscribe/login-recaptcha"
+msgstr "https://github.com/cyberscribe/login-recaptcha"
+
+#. URI of the plugin
+msgid "https://wordpress.org/plugins/login-recaptcha/"
+msgstr "https://wordpress.org/plugins/login-recaptcha/"
+
+#: admin.php:43
+msgid "If the reCAPTCHA displays correctly above, proceed as follows:"
+msgstr ""
+"Wenn das reCAPTCHA oben korrekt angezeigt wird, gehen Sie wie folgt vor:"
+
+#: admin.php:46
+msgid "If you are logged in on that new browser, log out"
+msgstr "Wenn Sie in diesem neuen Browser angemeldet sind, melden Sie sich ab"
+
+#: admin.php:50
+#, php-format
+msgid ""
+"If you have any problems logging in, click \"%s\" above and/or deactivate "
+"the plugin."
+msgstr ""
+"Wenn Sie Probleme bei der Anmeldung haben, klicken Sie oben auf \"%s\" "
+"und/oder deaktivieren Sie das Plugin."
+
+#: admin.php:42
+msgid "If you see an error message above, check your keys before proceeding."
+msgstr ""
+"Wenn oben eine Fehlermeldung angezeigt wird, überprüfen Sie Ihre Schlüssel, "
+"bevor Sie fortfahren."
+
+#. Name of the plugin
+msgid "Login No Captcha reCAPTCHA (Google)"
+msgstr "Login No Captcha reCAPTCHA (Google)"
+
+#: login-nocaptcha.php:74
+msgid "Login NoCaptcha"
+msgstr "Login NoCaptcha"
+
+#: login-nocaptcha.php:291
+#, php-format
+msgid ""
+"Login NoCaptcha fell back to using cURL instead of wp_remote_post(). The "
+"error message was: %s."
+msgstr ""
+"Login NoCaptcha hat sich auf die Verwendung von cURL anstelle von "
+"wp_remote_post () zurückgesetzt. Die Fehlermeldung war: %s."
+
+#: login-nocaptcha.php:52 login-nocaptcha.php:91 login-nocaptcha.php:99
+#, php-format
+msgid ""
+"Login NoCaptcha has not been properly configured. <a href=\"%s\">Click "
+"here</a> to configure."
+msgstr ""
+"Login NoCaptcha wurde nicht richtig konfiguriert. <a href=\"%s\"> Hier "
+"klicken</a>, um zu konfigurieren."
+
+#: login-nocaptcha.php:329 login-nocaptcha.php:337
+#, php-format
+msgid ""
+"Login NoCaptcha is not working. <a href=\"%s\">Please check your settings</a>"
+"."
+msgstr ""
+"Login NoCaptcha funktioniert nicht. <a href=\"%s\">Bitte überprüfen Sie Ihre "
+"Einstellungen</a>."
+
+#: login-nocaptcha.php:313
+#, php-format
+msgid ""
+"Login NoCaptcha is not working. <a href=\"%s\">Please check your settings</a>"
+". The message from Google was: %s"
+msgstr ""
+"Login NoCaptcha funktioniert nicht. <a href=\"%s\">Bitte überprüfen Sie Ihre "
+"Einstellungen</a>. Die Nachricht von Google war: %s"
+
+#: admin.php:6
+msgid "Login NoCaptcha Options"
+msgstr "Login NoCaptcha Optionen"
+
+#: login-nocaptcha.php:267
+#, php-format
+msgid "Login NoCaptcha was bypassed on login page: %s."
+msgstr "Login NoCaptcha wurde auf der Login-Seite umgangen: %s."
+
+#: login-nocaptcha.php:74
+msgid "Login NoCatpcha Options"
+msgstr "Login NoCaptcha Optionen"
+
+#: admin.php:40
+msgid "Next Steps"
+msgstr "Nächste Schritte"
+
+#: admin.php:45
+msgid "Open a completely different browser than this one"
+msgstr "Öffnen Sie einen völlig anderen Browser als diesen"
+
+#. Author of the plugin
+msgid "Robert Peake"
+msgstr "Robert Peake"
+
+#: admin.php:30
+msgid "Save Changes"
+msgstr "Änderungen speichern"
+
+#: admin.php:19
+msgid "Secret Key"
+msgstr "Geheimer Schlüssel"
+
+#: admin.php:14
+msgid "Site Key"
+msgstr "Seiten Schlüssel"
+
+#: login-nocaptcha.php:329 login-nocaptcha.php:337
+msgid "The response from Google was not valid."
+msgstr "Die Antwort von Google war nicht gültig."
+
+#: login-nocaptcha.php:180
+msgid "The response parameter is invalid or malformed."
+msgstr "Der Antwortparameter ist ungültig oder fehlerhaft."
+
+#: login-nocaptcha.php:179
+msgid "The response parameter is missing."
+msgstr "Der Antwortparameter fehlt."
+
+#: login-nocaptcha.php:178
+msgid "The secret parameter is invalid or malformed."
+msgstr "Der geheime Parameter ist ungültig oder fehlerhaft."
+
+#: login-nocaptcha.php:177
+msgid "The secret parameter is missing."
+msgstr "Der geheime Parameter fehlt."
+
+#: admin.php:24
+msgid "Whitelist IP ( 1 per line )"
+msgstr "Whitelist IP (1 pro Zeile)"
