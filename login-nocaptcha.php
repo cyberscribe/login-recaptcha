@@ -153,8 +153,8 @@ add_action('woocommerce_register_form',array('LoginNocaptcha', 'nocaptcha_form')
     }
 
     public static function register_scripts_css() {
-        $api_url = 'https://www.google.com/recaptcha/api.js?hl='.get_locale();
-        wp_register_script('login_nocaptcha_google_api', $api_url );
+        $api_url = 'https://www.google.com/recaptcha/api.js?onload=submitDisable';
+        wp_register_script('login_nocaptcha_google_api', $api_url, array(), null );
         wp_register_style('login_nocaptcha_css', plugin_dir_url( __FILE__ ) . 'css/style.css');
     }
 
@@ -200,9 +200,11 @@ add_action('woocommerce_register_form',array('LoginNocaptcha', 'nocaptcha_form')
             echo "                 }\n";
             if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
                 echo "                 var woo_buttons = ".json_encode(array('.woocommerce-form-login button','.woocommerce-form-register button','.woocommerce-ResetPassword button')).";\n"; 
-                echo "                 jQuery.each(woo_buttons,function(i,btn) {\n";
-                echo "                     jQuery(btn).removeAttr('disabled');\n";
-                echo "                 });\n";
+                echo "                 if (typeof jQuery != 'undefined') {\n";
+                echo "                     jQuery.each(woo_buttons,function(i,btn) {\n";
+                echo "                         jQuery(btn).removeAttr('disabled');\n";
+                echo "                     });\n";
+                echo "                 }\n";
             }
             echo "             }\n";
             echo "    function submitDisable() {\n";
@@ -218,13 +220,13 @@ add_action('woocommerce_register_form',array('LoginNocaptcha', 'nocaptcha_form')
             echo "                 }\n";
             if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
                 echo "                 var woo_buttons = ".json_encode(array('.woocommerce-form-login button','.woocommerce-form-register button','.woocommerce-ResetPassword button')).";\n"; 
-                echo "                 jQuery.each(woo_buttons,function(i,btn) {\n";
-                echo "                     jQuery(btn).attr('disabled','disabled');\n";
-                echo "                 });\n";
+                echo "                 if (typeof jQuery != 'undefined') {\n";
+                echo "                     jQuery.each(woo_buttons,function(i,btn) {\n";
+                echo "                        jQuery(btn).attr('disabled','disabled');\n";
+                echo "                     });\n";
+                echo "                 }\n";
             }
             echo "             }\n";
-            echo "    function docready(fn){/in/.test(document.readyState)?setTimeout('docready('+fn+')',9):fn()}";
-            echo "    docready(function() {submitDisable();});";
             echo '</script>'."\n";
             echo '<noscript>'."\n";
             echo '  <div style="width: 100%; height: 473px;">'."\n";
