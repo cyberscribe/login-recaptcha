@@ -71,6 +71,7 @@ This plugin is not affiliated with or endorsed by Google in any way. Google is a
 = 1.6.4 =
 
  * Tested with 5.2
+ * Using callback to disable submit buttons
 
 = 1.6.3 =
 
