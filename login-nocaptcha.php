@@ -4,7 +4,7 @@ Plugin Name: Login No Captcha reCAPTCHA (Google)
 Plugin URI: https://wordpress.org/plugins/login-recaptcha/
 Description: Adds a Google CAPTCHA checkbox to the login, registration, and forgot password forms, thwarting automated hacking attempts
 Author: Robert Peake
-Version: 1.6.2
+Version: 1.6.4
 Author URI: https://github.com/cyberscribe/login-recaptcha
 Text Domain: login-recaptcha
 Domain Path: /languages/
@@ -163,7 +163,10 @@ add_action('woocommerce_register_form',array('LoginNocaptcha', 'nocaptcha_form')
             LoginNocaptcha::register_scripts_css();
         }
         if ( (!empty($GLOBALS['pagenow']) && ($GLOBALS['pagenow'] == 'options-general.php' ||
-                $GLOBALS['pagenow'] == 'wp-login.php')) || (function_exists('is_account_page') && is_account_page()) ) {
+                $GLOBALS['pagenow'] == 'wp-login.php')) || 
+                (function_exists('is_account_page') && is_account_page()) ||
+                (function_exists('is_checkout') && is_checkout())
+            ) {
             wp_enqueue_script('login_nocaptcha_google_api');
             wp_enqueue_style('login_nocaptcha_css');
         }
