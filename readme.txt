@@ -2,8 +2,8 @@
 Contributors: robertpeake, robert.peake
 Tags: google,nocaptcha,recaptcha,security,login,bots
 Requires at least: 4.6
-Tested up to: 5.2
-Stable tag: 1.6.4
+Tested up to: 5.3.2
+Stable tag: 1.6.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -68,6 +68,19 @@ This plugin is not affiliated with or endorsed by Google in any way. Google is a
 
 == Changelog ==
 
+= 1.6.7 =
+
+ * Revert CSS styling changes after multiple reports of problems
+ * Add German language support
+
+= 1.6.6 =
+
+ * CSS styling improvement
+  
+= 1.6.5 =
+
+ * Tested with 5.3
+ 
 = 1.6.4 =
 
  * Tested with 5.2
