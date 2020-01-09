@@ -1,4 +1,5 @@
 #lostpasswordform div.g-recaptcha,
-#loginform div.g-recaptcha {
+#loginform div.g-recaptcha,
+#registerform div.g-recaptcha {
         margin: 12px 0 24px -15px;
 }

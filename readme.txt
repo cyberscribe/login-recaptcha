@@ -76,7 +76,7 @@ This plugin is not affiliated with or endorsed by Google in any way. Google is a
 = 1.6.6 =
 
  * CSS styling improvement
-  
+ *
 = 1.6.5 =
 
  * Tested with 5.3
