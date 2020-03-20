@@ -344,12 +344,8 @@ add_action('woocommerce_register_form',array('LoginNocaptcha', 'nocaptcha_form')
             if (isset($_POST['action']) && $_POST['action'] === 'lostpassword') {
                 return new WP_Error('authentication_failed', __('<strong>ERROR</strong>&nbsp;: Please check the ReCaptcha box.','login-recaptcha'));
             }
-            if (is_wp_error($user_or_email)) {
-                $user_or_email->add('no_captcha', __('<strong>ERROR</strong>&nbsp;: Please check the ReCaptcha box.','login-recaptcha'));
-                return $user_or_email;
-            } else {
-                return new WP_Error('authentication_failed', __('<strong>ERROR</strong>&nbsp;: Please check the ReCaptcha box.','login-recaptcha'));
-            }
+            //If you don't have 'g-recaptcha-response', return only a generic captcha error, not info about about a correct/incorrect user/password.
+            return new WP_Error('authentication_failed', __('<strong>ERROR</strong>&nbsp;: Please check the ReCaptcha box.','login-recaptcha'));
         }
     }
 
