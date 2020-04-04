@@ -302,8 +302,7 @@ add_action('woocommerce_register_form',array('LoginNocaptcha', 'nocaptcha_form')
                     if ( isset($g_response->{'error-codes'}) && $g_response->{'error-codes'} && in_array('missing-input-response', $g_response->{'error-codes'})) {
                         update_option('login_nocaptcha_working', true);
                         if (is_wp_error($user_or_email)) {
-                            $user_or_email->add('no_captcha', __('<strong>ERROR</strong>&nbsp;: Please check the ReCaptcha box.','login-recaptcha'));
-                            return $user_or_email;
+                            return new WP_Error('no_captcha', __('<strong>ERROR</strong>&nbsp;: Please check the ReCaptcha box.','login-recaptcha'));
                         } else {
                             return new WP_Error('authentication_failed', __('<strong>ERROR</strong>&nbsp;: Please check the ReCaptcha box.','login-recaptcha'));
                         }
@@ -319,8 +318,7 @@ add_action('woocommerce_register_form',array('LoginNocaptcha', 'nocaptcha_form')
                     } else if( isset($g_response->{'error-codes'})) {
                         update_option('login_nocaptcha_working', true);
                         if (is_wp_error($user_or_email)) {
-                            $user_or_email->add('invalid_captcha', __('<strong>ERROR</strong>&nbsp;: Incorrect ReCaptcha, please try again.','login-recaptcha'));
-                            return $user_or_email;
+                            return new WP_Error('invalid_captcha', __('<strong>ERROR</strong>&nbsp;: Incorrect ReCaptcha, please try again.','login-recaptcha'));
                         } else {
                             return new WP_Error('authentication_failed', __('<strong>ERROR</strong>&nbsp;: Incorrect ReCaptcha, please try again.','login-recaptcha'));
                         }
