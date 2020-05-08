@@ -155,7 +155,7 @@ add_action('woocommerce_register_form',array('LoginNocaptcha', 'nocaptcha_form')
     public static function register_scripts_css() {
         $api_url = 'https://www.google.com/recaptcha/api.js?onload=submitDisable';
         wp_register_script('login_nocaptcha_google_api', $api_url, array(), null );
-        wp_register_style('login_nocaptcha_css', plugin_dir_url( __FILE__ ) . 'css/style.css', array( 'login' ), filemtime( __FILE__ ));
+        wp_register_style('login_nocaptcha_css', plugin_dir_url( __FILE__ ) . 'css/style.css', array(), filemtime( __FILE__ ));
     }
 
     public static function enqueue_scripts_css() {
