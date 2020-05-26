@@ -25,6 +25,11 @@ if (!is_admin()) {
                 </label></th>
             <td><textarea type="text" id="id_login_nocaptcha_whitelist" name="login_nocaptcha_whitelist" cols="39" rows="5"><?php echo get_option('login_nocaptcha_whitelist'); ?></textarea></td>
         </tr>
+        <tr valign="top">
+            <td colspan="2"><input type="checkbox" id="id_login_nocaptcha_disable_css" name="login_nocaptcha_disable_css" <?php if (!empty(get_option('login_nocaptcha_disable_css'))) echo 'checked="checked"'; ?> value="1">
+                <label for="id_login_nocaptcha_disable_css"><?php _e('Disable CSS','login-recaptcha'); ?></span></label>
+            </td>
+        </tr>
     </table>
     <p>
     <input type="submit" name="submit" id="submit" class="button button-primary" value="<?php _e('Save Changes','login-recaptcha'); ?>">

@@ -2,8 +2,8 @@
 Contributors: robertpeake, robert.peake
 Tags: google,nocaptcha,recaptcha,security,login,bots
 Requires at least: 4.6
-Tested up to: 5.4
-Stable tag: 1.6.8
+Tested up to: 5.4.1
+Stable tag: 1.6.10
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -67,6 +67,15 @@ This plugin is not affiliated with or endorsed by Google in any way. Google is a
 2. Login screen once configured
 
 == Changelog ==
+
+= 1.6.10 =
+
+ - Resolve issue whereby captcha could be bypassed for new user registrations introduced in 1.6.9
+ - Add option to disable default CSS entirely
+
+= 1.6.9 =
+
+ - Resolves CSS dependency issue causing conflicts on non-login pages
 
 = 1.6.8 =
 
