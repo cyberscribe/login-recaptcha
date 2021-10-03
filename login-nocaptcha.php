@@ -51,7 +51,7 @@ class LoginNocaptcha {
             update_option('login_nocaptcha_message_type', 'notice-error');
             update_option('login_nocaptcha_error', sprintf(__('Login NoCaptcha has not been properly configured. <a href="%s">Click here</a> to configure.','login-recaptcha'), 'options-general.php?page=login-recaptcha/admin.php'));
             add_action('woocommerce_register_post',array('LoginNocaptcha', 'authenticate'));
-add_action('woocommerce_register_form',array('LoginNocaptcha', 'nocaptcha_form'));
+            add_action('woocommerce_register_form',array('LoginNocaptcha', 'nocaptcha_form'), 30);
         }
 
     }
@@ -62,7 +62,7 @@ add_action('woocommerce_register_form',array('LoginNocaptcha', 'nocaptcha_form')
             add_action('woocommerce_login_form',array('LoginNocaptcha', 'nocaptcha_form'));
             add_action('woocommerce_lostpassword_form',array('LoginNocaptcha', 'nocaptcha_form'));
             add_action('woocommerce_register_post',array('LoginNocaptcha', 'woo_authenticate'), 10, 3);
-            add_action('woocommerce_register_form',array('LoginNocaptcha', 'nocaptcha_form'));
+            add_action('woocommerce_register_form',array('LoginNocaptcha', 'nocaptcha_form'), 30);
         }
     }
 
