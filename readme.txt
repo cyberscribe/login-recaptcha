@@ -2,8 +2,8 @@
 Contributors: robertpeake, robert.peake
 Tags: google,nocaptcha,recaptcha,security,login,bots
 Requires at least: 4.6
-Tested up to: 5.4.1
-Stable tag: 1.6.10
+Tested up to: 6.4.3
+Stable tag: 1.7.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -67,6 +67,21 @@ This plugin is not affiliated with or endorsed by Google in any way. Google is a
 2. Login screen once configured
 
 == Changelog ==
+
+= 1.7.3 =
+ = Bumped compatiblity
+
+= 1.7.2 =
+ = Bumped compatiblity
+
+= 1.7.1 =
+ = Bumped compatiblity
+
+= 1.7 =
+ - Display information about the security implications of using the whitelist feature
+
+= 1.6.11 =
+ - Backwards compatbility fix for PHP <= 5.5 empty() quirk/bug: https://www.php.net/manual/en/function.empty.php
 
 = 1.6.10 =
 

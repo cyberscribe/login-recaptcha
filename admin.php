@@ -20,16 +20,64 @@ if (!is_admin()) {
                 </label></th>
             <td><input type="text" id="id_login_nocaptcha_secret" name="login_nocaptcha_secret" value="<?php echo get_option('login_nocaptcha_secret'); ?>" size="40" /></td>
         </tr>
-        <tr valign="top">
-                <th scope="row"><label for="id_login_nocaptcha_whitelist"><?php _e('Whitelist IP ( 1 per line )','login-recaptcha'); ?> (v2): </span>
-                </label></th>
-            <td><textarea type="text" id="id_login_nocaptcha_whitelist" name="login_nocaptcha_whitelist" cols="39" rows="5"><?php echo get_option('login_nocaptcha_whitelist'); ?></textarea></td>
-        </tr>
-        <tr valign="top">
-            <td colspan="2"><input type="checkbox" id="id_login_nocaptcha_disable_css" name="login_nocaptcha_disable_css" <?php if (!empty(get_option('login_nocaptcha_disable_css'))) echo 'checked="checked"'; ?> value="1">
-                <label for="id_login_nocaptcha_disable_css"><?php _e('Disable CSS','login-recaptcha'); ?></span></label>
-            </td>
-        </tr>
+    </table>
+    <table class="form-table form-v2">
+        <thead>
+            <tr valign="top">
+                <td colspan="2">
+                    <label for="login-recaptcha-toggle-advanced"><?php _e('Advanced Options','login-recaptcha'); ?></label>
+                    <button type="button" class="handlediv" aria-expanded="false" id="login-recaptcha-toggle-advanced" name="login-recaptcha-toggle-advanced" style="background: none; border: 0;">
+                        <span class="screen-reader-text"><?php _e('Toggle Advanced Options','login-recaptcha'); ?></span>
+                        <span class="toggle-indicator" aria-hidden="true" id="login-recaptcha-toggle-indicator">◀&#xFE0E;</span>
+                    </button>
+                    <script>
+                    document.querySelector('#login-recaptcha-toggle-advanced').addEventListener('click', function(e) {
+                        var advanced_options = document.querySelector('#login-recaptcha-advanced-options');
+                        var toggle_inidcator = document.querySelector('#login-recaptcha-toggle-indicator');
+                        if (advanced_options.style.display === 'none') {
+                            toggle_inidcator.innerHTML = '▼&#xFE0E;';
+                            advanced_options.style.display = "block";
+                            this.setAttribute('aria-expanded') = "true";
+                        } else {
+                            toggle_inidcator.innerHTML = '◀&#xFE0E;';
+                            advanced_options.style.display = "none";
+                            this.setAttribute('aria-expanded') = "false";
+                        }
+                    });
+                    </script>
+                </td>
+            </tr> 
+        </thead>
+        <tbody id="login-recaptcha-advanced-options" style="display: none;">
+            <tr valign="top">
+                    <th scope="row"><label for="id_login_nocaptcha_whitelist"><?php _e('Whitelist IP ( 1 per line )','login-recaptcha'); ?>: </span>
+                    </label></th>
+                <td><textarea type="text" id="id_login_nocaptcha_whitelist" name="login_nocaptcha_whitelist" cols="39" rows="5"><?php echo get_option('login_nocaptcha_whitelist'); ?></textarea></td>
+            </tr>
+            <?php if (!empty(get_option('login_nocaptcha_ip_detection_method'))): ?>
+                <tr valign="top">
+                        <th scope="row"><label><?php _e('IP Detection Method','login-recaptcha'); ?>: </span>
+                        </label></th>
+                        <td>
+                            <a href="https://www.php.net/manual/<?php echo htmlspecialchars(substr(get_locale(),0,2)); ?>/reserved.variables.server.php" target="_blank">
+                                <pre><?php echo get_option('login_nocaptcha_ip_detection_method'); ?></pre>
+                            </a>
+                        </td>
+                </tr>
+            <?php endif; ?>
+            <tr vlaign="top">
+                <td colspan="2">
+                    <p>
+                    <?php _e('Please note: the whitelist feature is provided as a courtesy for testing purposes. In some server configurations, an attacker who knows the value of one of the whitelisted IP adresses might be able to spoof that address to bypass the captcha. By using the whitelist, you acknowledge that you have considered and undestand this risk.', 'login-recaptcha'); ?>
+                    </p>
+                </td>
+            </tr> 
+            <tr valign="top">
+                <td colspan="2"><input type="checkbox" id="id_login_nocaptcha_disable_css" name="login_nocaptcha_disable_css" <?php if (!empty(get_option('login_nocaptcha_disable_css'))) echo 'checked="checked"'; ?> value="1">
+                    <label for="id_login_nocaptcha_disable_css"><?php _e('Disable CSS','login-recaptcha'); ?></span></label>
+                </td>
+            </tr>
+        </tbody>
     </table>
     <p>
     <input type="submit" name="submit" id="submit" class="button button-primary" value="<?php _e('Save Changes','login-recaptcha'); ?>">

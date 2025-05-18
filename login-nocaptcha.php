@@ -3,9 +3,9 @@
 Plugin Name: Login No Captcha reCAPTCHA (Google)
 Plugin URI: https://wordpress.org/plugins/login-recaptcha/
 Description: Adds a Google CAPTCHA checkbox to the login, registration, and forgot password forms, thwarting automated hacking attempts
-Author: Robert Peake
-Version: 1.6.10
-Author URI: https://github.com/cyberscribe/login-recaptcha
+Author: Robert Peake and Contributors
+Version: 1.7.3
+Author URI: https://github.com/cyberscribe/login-recaptcha/graphs/contributors
 Text Domain: login-recaptcha
 Domain Path: /languages/
 */
@@ -51,7 +51,7 @@ class LoginNocaptcha {
             update_option('login_nocaptcha_message_type', 'notice-error');
             update_option('login_nocaptcha_error', sprintf(__('Login NoCaptcha has not been properly configured. <a href="%s">Click here</a> to configure.','login-recaptcha'), 'options-general.php?page=login-recaptcha/admin.php'));
             add_action('woocommerce_register_post',array('LoginNocaptcha', 'authenticate'));
-            add_action('woocommerce_register_form',array('LoginNocaptcha', 'nocaptcha_form'), 30);
+add_action('woocommerce_register_form',array('LoginNocaptcha', 'nocaptcha_form'));
         }
 
     }
@@ -62,7 +62,7 @@ class LoginNocaptcha {
             add_action('woocommerce_login_form',array('LoginNocaptcha', 'nocaptcha_form'));
             add_action('woocommerce_lostpassword_form',array('LoginNocaptcha', 'nocaptcha_form'));
             add_action('woocommerce_register_post',array('LoginNocaptcha', 'woo_authenticate'), 10, 3);
-            add_action('woocommerce_register_form',array('LoginNocaptcha', 'nocaptcha_form'), 30);
+            add_action('woocommerce_register_form',array('LoginNocaptcha', 'nocaptcha_form'));
         }
     }
 
@@ -123,12 +123,13 @@ class LoginNocaptcha {
     }
 
     public static function get_ip_address() {
-        foreach (array('HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_FORWARDED', 'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED_FOR', 'HTTP_FORWARDED', 'REMOTE_ADDR') as $key){
+        foreach (array('REMOTE_ADDR', 'HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_FORWARDED', 'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED_FOR', 'HTTP_FORWARDED') as $key){
             if (array_key_exists($key, $_SERVER) === true) {
                 foreach (explode(',', $_SERVER[$key]) as $ip) {
                     $ip = trim($ip); // just to be safe
                     $ip = filter_var($ip, FILTER_VALIDATE_IP);
                     if (!empty($ip)) {
+                        update_option('login_nocaptcha_ip_detection_method', $key);
                         return $ip;
                     }
                 }
@@ -161,7 +162,8 @@ class LoginNocaptcha {
     public static function register_scripts_css() {
         $api_url = 'https://www.google.com/recaptcha/api.js?onload=submitDisable';
         wp_register_script('login_nocaptcha_google_api', $api_url, array(), null );
-        if (empty(get_option('login_nocaptcha_disable_css'))) {
+        $login_nocaptcha_disable_css = get_option('login_nocaptcha_disable_css');
+        if (empty($login_nocaptcha_disable_css)) {
             wp_register_style('login_nocaptcha_css', plugin_dir_url( __FILE__ ) . 'css/style.css', array(), filemtime( __FILE__ ));
         }
     }
@@ -257,9 +259,11 @@ class LoginNocaptcha {
             echo '</div><br>'."\n";
             echo '</noscript>'."\n";
         } else {
+            $detection_method = get_option('login_nocaptcha_ip_detection_method');
             update_option('login_nocaptcha_notice', time());
             update_option('login_nocaptcha_message_type', 'notice-info');
-            update_option('login_nocaptcha_error', sprintf(__('Captcha bypassed by whitelist for ip address %s',    'login-recaptcha'), LoginNoCaptcha::get_ip_address()) );
+            update_option('login_nocaptcha_error', sprintf(__('Captcha bypassed by whitelist for ip address %s using detection method %s (See "Advanced
+    Options" in <a href="%s">settings</a> for security implications)',    'login-recaptcha'), LoginNoCaptcha::get_ip_address(), $detection_method, 'options-general.php?page=login-recaptcha/admin.php'));
             echo '<p style="color: red; font-weight: bold;">'.sprintf(__('Captcha bypassed by whitelist for ip address %s','login-recaptcha'), LoginNoCaptcha::get_ip_address()).'</p>';
         }
     }
