@@ -119,7 +119,8 @@ add_action('woocommerce_register_form',array('LoginNocaptcha', 'nocaptcha_form')
     }
 
     public static function filter_whitelist( $string ) {
-        return preg_replace( '/[ \t]/', '', trim(filter_var($string, FILTER_SANITIZE_STRING)) ); //must consist of valid string characters, remove spaces
+        // must consist of valid string characters, remove spaces
+        return preg_replace('/[ \t]/', '', trim( htmlspecialchars( $string, ENT_QUOTES ) ) );
     }
 
     public static function get_ip_address() {
