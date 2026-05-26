@@ -1,9 +1,10 @@
 === Login No Captcha reCAPTCHA ===
 Contributors: robertpeake, robert.peake
-Tags: google,nocaptcha,recaptcha,security,login,bots
+Tags: google,nocaptcha,recaptcha,security,bots
 Requires at least: 4.6
+Requires PHP: 7.2
 Tested up to: 6.8.1
-Stable tag: 1.7.3
+Stable tag: 1.7.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -67,6 +68,13 @@ This plugin is not affiliated with or endorsed by Google in any way. Google is a
 2. Login screen once configured
 
 == Changelog ==
+
+= 1.7.4 =
+ - Security: escape output in admin notices to prevent stored XSS
+ - Security: escape PHP_SELF value before storing in database
+ - Security: escape site key in reCAPTCHA widget output
+ - Replace deprecated FILTER_SANITIZE_STRING (removed in PHP 8.2) with sanitize_text_field()
+ - Minimum PHP version is now 7.2
 
 = 1.7.3 =
  = Bumped compatiblity
@@ -246,3 +254,5 @@ This plugin is not affiliated with or endorsed by Google in any way. Google is a
 = 1.0.0 =
 
 * Initial release
+
+Wordfence ID: hhteadwfrjk2n0duf8izm76wqgevziuz

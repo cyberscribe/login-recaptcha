@@ -4,7 +4,8 @@ Plugin Name: Login No Captcha reCAPTCHA (Google)
 Plugin URI: https://wordpress.org/plugins/login-recaptcha/
 Description: Adds a Google CAPTCHA checkbox to the login, registration, and forgot password forms, thwarting automated hacking attempts
 Author: Robert Peake and Contributors
-Version: 1.7.3
+Version: 1.7.4
+Requires PHP: 7.2
 Author URI: https://github.com/cyberscribe/login-recaptcha/graphs/contributors
 Text Domain: login-recaptcha
 Domain Path: /languages/
@@ -103,7 +104,7 @@ add_action('woocommerce_register_form',array('LoginNocaptcha', 'nocaptcha_form')
     }
 
     public static function filter_string( $string ) {
-        return trim(filter_var($string, FILTER_SANITIZE_STRING)); //must consist of valid string characters
+        return sanitize_text_field($string);
     }
 
     public static function filter_boolean( $bool ) {
@@ -119,7 +120,7 @@ add_action('woocommerce_register_form',array('LoginNocaptcha', 'nocaptcha_form')
     }
 
     public static function filter_whitelist( $string ) {
-        return preg_replace( '/[ \t]/', '', trim(filter_var($string, FILTER_SANITIZE_STRING)) ); //must consist of valid string characters, remove spaces
+        return preg_replace( '/[ \t]/', '', sanitize_text_field($string) );
     }
 
     public static function get_ip_address() {
@@ -198,7 +199,7 @@ add_action('woocommerce_register_form',array('LoginNocaptcha', 'nocaptcha_form')
     public static function nocaptcha_form() {
 
         if (!LoginNocaptcha::ip_in_whitelist()) {
-            echo sprintf('<div class="g-recaptcha" id="g-recaptcha" data-sitekey="%s" data-callback="submitEnable" data-expired-callback="submitDisable"></div>', get_option('login_nocaptcha_key'))."\n";
+            echo sprintf('<div class="g-recaptcha" id="g-recaptcha" data-sitekey="%s" data-callback="submitEnable" data-expired-callback="submitDisable"></div>', esc_attr(get_option('login_nocaptcha_key')))."\n";
             echo '<script>'."\n";
             echo "    function submitEnable() {\n";
             echo "                 var button = document.getElementById('wp-submit');\n";
@@ -242,7 +243,7 @@ add_action('woocommerce_register_form',array('LoginNocaptcha', 'nocaptcha_form')
             echo '  <div style="width: 100%; height: 473px;">'."\n";
             echo '      <div style="width: 100%; height: 422px; position: relative;">'."\n";
             echo '          <div style="width: 302px; height: 422px; position: relative;">'."\n";
-            echo sprintf('              <iframe src="https://www.google.com/recaptcha/api/fallback?k=%s"', get_option('login_nocaptcha_key'))."\n";
+            echo sprintf('              <iframe src="https://www.google.com/recaptcha/api/fallback?k=%s"', esc_attr(get_option('login_nocaptcha_key')))."\n";
             echo '                  frameborder="0" title="captcha" scrolling="no"'."\n";
             echo '                  style="width: 302px; height:422px; border-style: none;">'."\n";
             echo '              </iframe>'."\n";
@@ -278,7 +279,7 @@ add_action('woocommerce_register_form',array('LoginNocaptcha', 'nocaptcha_form')
             //bypass reCaptcha checking
             update_option('login_nocaptcha_notice', time());
             update_option('login_nocaptcha_message_type', 'notice-error');
-            update_option('login_nocaptcha_error', sprintf(__('Login NoCaptcha was bypassed on login page: %s.','login-recaptcha'),basename($_SERVER['PHP_SELF'])));
+            update_option('login_nocaptcha_error', sprintf(__('Login NoCaptcha was bypassed on login page: %s.','login-recaptcha'), esc_html(basename($_SERVER['PHP_SELF']))));
             return $user_or_email;
         }
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -374,7 +375,7 @@ add_action('woocommerce_register_form',array('LoginNocaptcha', 'nocaptcha_form')
             }
             echo '<div class="notice '.$message_type.' is-dismissible">'."\n";
             echo '    <p>'."\n";
-            echo get_option('login_nocaptcha_error');
+            echo wp_kses_post(get_option('login_nocaptcha_error'));
             echo '    </p>'."\n";
             echo '</div>'."\n";
         }
