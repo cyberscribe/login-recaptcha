@@ -2,9 +2,9 @@
 Contributors: robertpeake, robert.peake
 Tags: google,nocaptcha,recaptcha,security,bots
 Requires at least: 4.6
-Requires PHP: 7.2
-Tested up to: 6.8.1
-Stable tag: 1.7.4
+Requires PHP: 7.4
+Tested up to: 7.0
+Stable tag: 1.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -69,12 +69,12 @@ This plugin is not affiliated with or endorsed by Google in any way. Google is a
 
 == Changelog ==
 
-= 1.7.4 =
+= 1.8 =
  - Security: escape output in admin notices to prevent stored XSS
  - Security: escape PHP_SELF value before storing in database
  - Security: escape site key in reCAPTCHA widget output
  - Replace deprecated FILTER_SANITIZE_STRING (removed in PHP 8.2) with sanitize_text_field()
- - Minimum PHP version is now 7.2
+ - Minimum PHP version is now 7.4
 
 = 1.7.3 =
  = Bumped compatiblity
