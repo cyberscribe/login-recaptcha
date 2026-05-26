@@ -13,12 +13,12 @@ if (!is_admin()) {
         <tr valign="top">
                 <th scope="row"><label for="id_login_nocaptcha_key"><?php _e('Site Key','login-recaptcha'); ?> (v2): </span>
                 </label></th>
-            <td><input type="text" id="id_login_nocaptcha_key" name="login_nocaptcha_key" value="<?php echo get_option('login_nocaptcha_key'); ?>" size="40" /></td>
+            <td><input type="text" id="id_login_nocaptcha_key" name="login_nocaptcha_key" value="<?php echo esc_attr(get_option('login_nocaptcha_key')); ?>" size="40" /></td>
         </tr>
         <tr valign="top">
                 <th scope="row"><label for="id_login_nocaptcha_secret"><?php _e('Secret Key','login-recaptcha'); ?> (v2): </span>
                 </label></th>
-            <td><input type="text" id="id_login_nocaptcha_secret" name="login_nocaptcha_secret" value="<?php echo get_option('login_nocaptcha_secret'); ?>" size="40" /></td>
+            <td><input type="text" id="id_login_nocaptcha_secret" name="login_nocaptcha_secret" value="<?php echo esc_attr(get_option('login_nocaptcha_secret')); ?>" size="40" /></td>
         </tr>
     </table>
     <table class="form-table form-v2">
@@ -52,7 +52,7 @@ if (!is_admin()) {
             <tr valign="top">
                     <th scope="row"><label for="id_login_nocaptcha_whitelist"><?php _e('Whitelist IP ( 1 per line )','login-recaptcha'); ?>: </span>
                     </label></th>
-                <td><textarea type="text" id="id_login_nocaptcha_whitelist" name="login_nocaptcha_whitelist" cols="39" rows="5"><?php echo get_option('login_nocaptcha_whitelist'); ?></textarea></td>
+                <td><textarea type="text" id="id_login_nocaptcha_whitelist" name="login_nocaptcha_whitelist" cols="39" rows="5"><?php echo esc_textarea(get_option('login_nocaptcha_whitelist')); ?></textarea></td>
             </tr>
             <?php if (!empty(get_option('login_nocaptcha_ip_detection_method'))): ?>
                 <tr valign="top">

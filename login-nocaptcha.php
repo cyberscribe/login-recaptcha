@@ -4,7 +4,7 @@ Plugin Name: Login No Captcha reCAPTCHA (Google)
 Plugin URI: https://wordpress.org/plugins/login-recaptcha/
 Description: Adds a Google CAPTCHA checkbox to the login, registration, and forgot password forms, thwarting automated hacking attempts
 Author: Robert Peake and Contributors
-Version: 1.8
+Version: 1.8.1
 Requires PHP: 7.4
 Author URI: https://github.com/cyberscribe/login-recaptcha/graphs/contributors
 Text Domain: login-recaptcha
@@ -291,22 +291,18 @@ add_action('woocommerce_register_form',array('LoginNocaptcha', 'nocaptcha_form')
             $secret = get_option('login_nocaptcha_secret');
             $payload = array('secret' => $secret, 'response' => $response, 'remoteip' => $remoteip);
             $result = wp_remote_post('https://www.google.com/recaptcha/api/siteverify', array('body' => $payload) );
-            if (is_wp_error($result)) { // disable SSL verification for older clients and misconfigured TLS trust certificates
+            if (is_wp_error($result)) {
                 $error_msg = $result->get_error_message();
-                $ch = curl_init();
-                curl_setopt($ch, CURLOPT_URL, 'https://www.google.com/recaptcha/api/siteverify');
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch, CURLOPT_POST, 1);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
-                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-                $result = curl_exec($ch);
-                $g_response = json_decode( $result );
                 update_option('login_nocaptcha_notice', time());
-                update_option('login_nocaptcha_message_type', 'notice-warning');
-                update_option('login_nocaptcha_error', sprintf(__('Login NoCaptcha fell back to using cURL instead of wp_remote_post(). The error message was: %s.','login-recaptcha'), $error_msg) );
-            } else {
-                $g_response = json_decode($result['body']);
+                update_option('login_nocaptcha_message_type', 'notice-error');
+                update_option('login_nocaptcha_error', sprintf(__('Login NoCaptcha could not reach Google to verify the reCAPTCHA. Please check your server SSL configuration. The error was: %s.','login-recaptcha'), esc_html($error_msg)));
+                if (is_wp_error($user_or_email)) {
+                    $user_or_email->add('no_captcha', __('<strong>ERROR</strong>&nbsp;: reCAPTCHA verification is currently unavailable. Please contact the site administrator.','login-recaptcha'));
+                    return $user_or_email;
+                }
+                return new WP_Error('authentication_failed', __('<strong>ERROR</strong>&nbsp;: reCAPTCHA verification is currently unavailable. Please contact the site administrator.','login-recaptcha'));
             }
+            $g_response = json_decode($result['body']);
             if (is_object($g_response)) {
                 if ( $g_response->success ) {
                     update_option('login_nocaptcha_working', true);

@@ -4,7 +4,7 @@ Tags: google,nocaptcha,recaptcha,security,bots
 Requires at least: 4.6
 Requires PHP: 7.4
 Tested up to: 7.0
-Stable tag: 1.8
+Stable tag: 1.8.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -50,6 +50,10 @@ Yes, please. Submit pull requests on <a href="https://github.com/cyberscribe/log
 
 Please see <a href="https://support.google.com/recaptcha/answer/6223838?hl=en">this page</a> for help from Google.
 
+= Does this plugin protect XML-RPC or the REST API? =
+
+No. This plugin protects the standard WordPress login form at wp-login.php and WooCommerce login, registration, and lost password forms. Authentication requests made via XML-RPC (xmlrpc.php) or the WordPress REST API do not pass through the login form and therefore bypass reCAPTCHA entirely. If you are concerned about brute-force attacks via these endpoints, you should disable XML-RPC if you do not use it (many security plugins offer this) and ensure the REST API authentication endpoints are protected separately. This plugin tries to do just a few things well.
+
 = I still see lots of brute force attacks against /wp-login.php in my log files =
 
 The reCAPTCHA plugin will not prevent the attempt of brute force attacks, rather it will simply ensure that they do not succeed. That is, scripts may still attempt direct POST attacks against /wp-login.php, but without the correct reCAPTCHA data, they will not go through (even if they have guessed the login and password correctly). To prevent repeat attempts against /wp-login.php, consider using a plugin that <a href="https://en-gb.wordpress.org/plugins/search.php?q=Limit+Login+Attempts">limits login attempts</a> in conjunction with this one. Other approaches, such as a <a href="https://en-gb.wordpress.org/plugins/tags/web-application-firewall">web application firewall</a> should also form a part of your complete defense-in-depth strategy.
@@ -68,6 +72,11 @@ This plugin is not affiliated with or endorsed by Google in any way. Google is a
 2. Login screen once configured
 
 == Changelog ==
+
+= 1.8.1 =
+ - Security: remove insecure cURL fallback that disabled SSL peer verification; verification failure now blocks login and surfaces an admin notice
+ - Security: escape API key and secret fields in settings page HTML attribute context
+ - Security: escape IP whitelist field in settings page textarea context
 
 = 1.8 =
  - Security: escape output in admin notices to prevent stored XSS
